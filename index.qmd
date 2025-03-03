@@ -1,0 +1,42 @@
+---
+title: "Will Akin" 
+about:
+  template: trestles  # jolla  trestles  solana  marquee  broadside
+  image: img/IMG_1340.png
+  image-width: 16em
+  image-shape: round # rectangle  round  rounded
+  
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/will-akin-7a0b2628b/
+    - icon: instagram
+      text: Instagram
+      href: https://www.instagram.com/will.akin16/
+    - icon: github
+      text: GitHub
+      href: https://github.com/willakin16/willakin16.github.io
+    - icon: file-earmark-pdf
+      text: Resumé
+      href: Resume-Danl210.pdf
+      target: _blank
+    - icon: mailbox
+      text: Email
+      href: mailto:wla1@geneseo.edu
+
+---
+
+
+Will Akin majors in Data Analytics at SUNY Geneseo. When not working on data analytics, Will enjoys spending time with friends and going to concerts.
+
+## Education
+
+State University of New York at Geneseo | Geneseo, NY <br>
+B.S. in Data Analytics and B.A. in Sociomedical Science | Aug 2023 - May 2027 <br>
+
+
+## Experience
+
+Target Employee | Style Consultant | Feb 2024 - 
+
+

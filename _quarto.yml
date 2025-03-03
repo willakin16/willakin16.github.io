@@ -1,0 +1,35 @@
+project: 
+  type: website
+  output-dir: "." 
+
+website:
+  title: "Will Akin"
+  navbar:
+    # background: "#1c4982"
+    pinned: true
+    left:
+      - text: Project
+        href: danl_proj_nba.ipynb
+      - text: Blog
+        href: blog-listing.qmd
+      - text: Python Data Analysis
+        menu:
+        - text: Pandas Basics
+          href: pandas_basics.ipynb
+        - text: Seaborn Basics
+          href: seaborn_basics.ipynb
+            
+  page-footer: 
+    center: "Powered with GitHub, Quarto, and Jupyter Notebook<br>© YOUR NAME, 2025"
+
+format:
+  html:
+    theme: 
+      light: flatly # flatly sandstone yeti united litera journal
+      dark: darkly #  darkly cyborg slate solra superhero
+    mainfont: system-ui; 
+    highlight-style: atom-one  # atom-one espresso
+    css: styles.css
+    toc: false
+    include-after-body: target_blank.html
+
