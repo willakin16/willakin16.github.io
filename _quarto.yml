@@ -9,7 +9,7 @@ website:
     pinned: true
     left:
       - text: Project
-        href: danl_proj_nba.ipynb
+        href: Danl_210_Project2.ipynb
       - text: Blog
         href: blog-listing.qmd
       - text: Python Data Analysis

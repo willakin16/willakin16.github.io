@@ -1,0 +1,170 @@
+---
+title: "DANL320 Lect3"
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+custdata <- read_csv('https://bcdanl.github.io/data/custdata_rev.csv')
+class(custdata)
+custdata$age
+```
+
+```{r}
+nrow(custdata)  # rows only
+ncol(custdata)  # columns only
+```
+
+```{r}
+col_names <- colnames(custdata)
+col_names
+```
+
+```{r}
+rownames(custdata) <- custdata$custid
+```
+
+```{r}
+colnames(custdata) <- str_c("var_", colnames(custdata))
+```
+
+```{r}
+# Load and summarize
+library(skimr)
+sum_custdata <- skim(custdata) #
+```
+
+```{r}
+#sum_group_custdata <- custdata |>
+  #group_by(state_or_res) |> skim()
+```
+
+# Classwork 5
+
+```{r}
+# install.packages("ggthemes")
+library(ggthemes)
+library(tidyverse)
+
+flights <- nycflights13::flights
+```
+
+```{r}
+# Question 1
+ggplot(data = flights,
+       mapping = aes(x = air_time)) +
+  geom_histogram(binwidth = 1)
+```
+
+```{r}
+# Question 2
+ggplot(data = flights,
+       mapping = aes(x = air_time)) +
+  geom_histogram(bins = 50,
+                   fill = "lightblue") +
+  facet_wrap(~origin)
+```
+
+```{r}
+ggplot(data = flights,
+       mapping = aes(x = air_time,
+                     color = origin,
+                     fill = origin)) +
+  geom_density(alpha = .25)
+```
+
+```{r}
+ggplot(data = flights,
+       mapping = aes(x = air_time,
+                     y = origin,
+                     fill = origin,
+                     )) +
+  geom_boxplot(show.legend = FALSE)
+```
+
+```{r}
+# Question 3
+top3_n <- flights |> 
+  count(carrier) |> 
+  arrange( desc(n) ) |> 
+  head(3)  # returns the first 3 observations in the given data.frame
+```
+
+```{r}
+# Question 4
+top3_carriers <- flights |> 
+  filter(carrier %in% c("UA", "B6", "EV")) |> 
+  group_by(month, day, dep_time, carrier, origin, dest)
+```
+
+```{r}
+# Question 5
+ggplot(data = top3_carriers,
+       mapping = aes(y = carrier,
+                     fill = carrier)) +
+  geom_bar(show.legend = FALSE)
+```
+
+```{r}
+ggplot(data = top3_carriers,
+       mapping = aes(y = carrier,
+                     x = after_stat(prop),
+                     group = 1)) +
+  geom_bar(show.legend = FALSE)
+```
+
+```{r}
+# Question 6
+ggplot(data = top3_carriers,
+       mapping = aes(y = origin,
+                     fill = carrier)) +
+  geom_bar()
+```
+
+```{r}
+ggplot(data = top3_carriers,
+       mapping = aes(y = origin,
+                     fill = carrier)) +
+  geom_bar(position = "fill") +
+  labs(x = "Proportion") # label x-axis title
+```
+
+```{r}
+ggplot(data = top3_carriers,
+       mapping = aes(y = origin,
+                     fill = carrier)) +
+  geom_bar(position = "dodge")
+```
+
+```{r}
+ggplot(data = top3_carriers,
+       mapping = aes(y = carrier,
+                     fill = carrier)) +
+  geom_bar(show.legend = FALSE) +
+  facet_wrap(~origin)
+```
+
+```{r}
+# Question 7
+ggplot(data = top3_n,
+       mapping = aes(x = n,
+                     y = carrier,
+                     fill = carrier)) +
+  geom_col(show.legend = FALSE)
+```
+
+```{r}
+# Question 8
+ggplot(data = top3_n,
+       mapping = aes(x = n,
+                     y = fct_reorder(carrier, n))) +
+  geom_col() +
+  labs(y = "Carrier")   # label y-axis title
+```
+
+```{r}
+# Question 9
+carrier_per_origin <- flights |> 
+  count(origin, carrier) |> 
+  arrange(origin, -n)
+```

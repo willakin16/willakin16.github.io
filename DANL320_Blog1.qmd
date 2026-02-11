@@ -1,0 +1,41 @@
+---
+title: "Ben & Jerry’s Ice Cream"
+author: "Will Akin"
+date: today
+categories: [r, data-analysis, ice-cream]
+format: html
+---
+
+```{r}
+library(tidyverse)
+ice_cream <- read_csv("https://bcdanl.github.io/data/ben-and-jerry-cleaned.csv")
+```
+
+```{r}
+summary(ice_cream)
+```
+
+```{r}
+ice_cream %>%
+  count(flavor_descr, sort = TRUE) %>%
+  slice_head(n = 5)
+
+```
+
+```{r}
+ice_cream %>%
+  group_by(flavor_descr) %>%
+  summarise(avg_price = mean(priceper1, na.rm = TRUE)) %>%
+  arrange(desc(avg_price)) %>%
+  slice_head(n = 10)
+```
+
+```{r}
+model <- lm(
+  priceper1 ~ usecoup + household_size + region,
+  data = ice_cream
+)
+
+summary(model)
+
+```

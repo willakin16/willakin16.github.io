@@ -1,0 +1,517 @@
+---
+title: Homework 1
+subtitle: "Linear Regression · Quarto Blogging"
+author: Will Akin
+date: last-modified
+from: markdown+emoji
+execute:
+  eval: false
+---
+
+```{r}
+#| include: false
+
+library(tidyverse)
+```
+
+
+# Directions
+
+- Submit your **Quarto document** for **Part 1** to Brightspace using this filename format:
+
+  - `danl-320-hw1-LASTNAME-FIRSTNAME.qmd`  
+    (e.g., `danl-320-hw1-choe-byeonghak.qmd`)
+
+- **Due:** **February 11, 2026, 3:15 PM (ET)**
+
+- Questions? Email Byeong-Hak (`bchoe@geneseo.edu`).
+
+<br><br>
+
+# Required R Packages
+```{r}
+#| echo: true
+#| eval: true
+
+library(tidyverse)
+library(stargazer)
+library(broom)
+```
+
+
+<br>
+
+
+# Part 1. Linear Regression
+
+Consider the `beer_markets` data:
+
+```{r}
+library(tidyverse)
+
+beer_markets <- read_csv(
+  "https://bcdanl.github.io/data/beer_markets_all_cleaned.csv"
+)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+DT::datatable(readr::read_csv("https://bcdanl.github.io/data/beer_markets_all_cleaned.csv"))
+```
+
+<br>
+
+## Variable Description
+
+| Variable Name           | Description |
+|-------------------------|-------------|
+| `household`              | Unique identifier for household |
+| `X_purchase_desc`        | Description of beer purchase |
+| `quantity`               | Number of beer packages purchased |
+| `brand`                  | Brand of beer purchased |
+| `dollar_spent`           | Total amount spent on the purchase |
+| `beer_floz`              | Total volume of beer purchased (in fluid ounces) |
+| `price_floz`             | Price per fluid ounce of beer |
+| `container`              | Type of beer container (e.g., CAN, BOTTLE) |
+| `promo`                  | Indicates if the purchase was part of a promotion (`TRUE/FALSE`) |
+| `region`                 | Geographic region of purchase |
+| `marital`                | Marital status of household head |
+| `income`                 | Income level of the household |
+| `age`                    | Age group of household head |
+| `employment`             | Employment status of household head |
+| `degree`                 | Education level of household head |
+| `occupation`             | Occupation category of household head |
+| `ethnic`                 | Ethnicity of household head |
+| `microwave`              | Indicates if the household owns a microwave (`TRUE/FALSE`) |
+| `dishwasher`             | Indicates if the household owns a dishwasher (`TRUE/FALSE`) |
+| `tvcable`                | Type of television subscription (e.g., basic, premium) |
+| `singlefamilyhome`       | Indicates if the household is a single-family home (`TRUE/FALSE`) |
+| `npeople`                | Number of people in the household |
+
+
+
+## Question 1 — Filter the data (containers)
+
+Create a data frame that keeps **only** observations where `container` is:
+
+- `"CAN"` **or**
+- `"NON REFILLABLE BOTTLE"`
+
+Requirements:
+- Name your filtered data frame `beer_sub`.
+- Report the number of observations in `beer_sub`.
+- Report a frequency table of `container` in `beer_sub`.
+
+
+**Answer:**
+
+```{r}
+beer_sub <- beer_markets |>
+  filter(container %in% c("CAN", "NON_REFILLABLE_BOTTLE"))
+nrow(beer_sub)
+table(beer_sub$container)
+```
+
+
+
+
+## Question 2 — Train/test split
+
+Split `beer_sub` into two data frames:
+
+- Training set (`beer_train`): about **67%** of observations
+- Test set (`beer_test`): the remaining observations
+
+**Requirements:**
+
+- Use a random seed for reproducibility (you choose the seed).
+- Report `nrow(beer_train)` and `nrow(beer_test)`.
+- Briefly explain *why* we keep a test set.
+
+**Answer:**
+
+```{r}
+set.seed(123)
+
+n <- nrow(beer_sub)
+
+train_index <- sample(seq_len(n), size = round(0.67 * n))
+
+beer_train <- beer_sub[train_index, ]
+beer_test  <- beer_sub[-train_index, ]
+
+
+nrow(beer_train)
+nrow(beer_test)
+# It is important to keep a test set to evaluate how the model works on unseen data.
+```
+
+
+
+## Questions 3–8 (Regression models)
+
+You will estimate three linear regression models for:
+
+- Outcome: $\log(\text{price\_floz})$
+
+**Reference levels (required):**
+
+- Set `"BUD_LIGHT"` as the reference level for `brand`.
+- Set `"BUFFALO-ROCHESTER"` as the reference level for `market`.
+  - There are $N+1$ distinct categories in `market`.
+
+
+<br>
+
+### Model 1
+
+$$
+\begin{aligned}
+\log(\text{price\_floz}) = &\ \beta_{0} + \sum_{i=1}^{N} \beta_{i} \,\text{market}_{i} + \sum_{j=N+1}^{N+4} \beta_{j} \,\text{brand}_{j}
++ \beta_{N+5} \,\text{container\_CAN} \\ 
+&\,+\, \beta_{N+6} \log(\text{beer\_floz}) + \epsilon
+\end{aligned}
+$$
+
+### Model 2 (brand-specific volume sensitivity)
+
+$$
+\begin{aligned}
+\log(\text{price\_floz}) \,=\, & \beta_{0} \,+\, \sum_{i=1}^{N}\beta_{i}\,\text{market}_{i} \,+\, \sum_{j=N+1}^{N+4}\beta_{j}\,\text{brand}_{j} \,+\, \beta_{N+5}\,\text{container\_CAN} \\
+&\,+\, \beta_{N+6}\log(\text{beer\_floz})\\
+&\,+\, \sum_{j=N+1}^{N+4}\beta_{j\times\text{beer\_floz}}\,\text{brand}_{j}\times \log(\text{beer\_floz})\\
+&\,+\, \epsilon
+\end{aligned}
+$$
+
+### Model 3 (promo + brand-specific promo effects)
+
+$$
+\begin{aligned}
+\log(\text{price\_floz}) \,=\, & \beta_{0} \,+\, \sum_{i=1}^{N}\beta_{i}\,\text{market}_{i} \,+\, \sum_{j=N+1}^{N+4}\beta_{j}\,\text{brand}_{j} \,+\, \beta_{N+5}\,\text{container\_CAN} \\
+&\,+\, \beta_{N+6}\log(\text{beer\_floz})\\
+&\,+\, \beta_{N+7}\,\text{promo} \times\log(\text{beer\_floz}) \\
+&\,+\, \sum_{j=N+1}^{N+4}\beta_{j\times\text{beer\_floz}}\,\text{brand}_{j}\times \log(\text{beer\_floz})\\
+&\,+\, \sum_{j=N+1}^{N+4}\beta_{j\times\text{promo}}\,\text{brand}_{j}\times \text{promo}\\
+&\,+\, \sum_{j=N+1}^{N+4}\beta_{j\times\text{promo}\times\text{beer\_floz}}\,\text{brand}_{j}\times \text{promo}\times \log(\text{beer\_floz})\\
+&\,+\, \epsilon
+\end{aligned}
+$$
+
+### Question 3 — Model intuition (conceptual)
+
+For **each** model, explain in plain English:
+
+- What is the model trying to capture?
+- What kinds of differences across markets and brands are allowed?
+- How does the model treat the relationship between volume (`beer_floz`) and price (`price_floz`)?
+- What *new* flexibility is added when moving from Model 1 → 2 → 3?
+
+**Answer:**
+# Model 1 is trying to capture price per fluid ounce
+# Model 2 is capturing price per fluid ounce in regards to brand specific volume sensitivity
+# Model 3 is capturing price per fluid ounce in regards to volume sensitivity and promo effects
+# Nrand differences in price levels and pricing behaviors are allowed in the model
+# There is a log-log relationship, meaning the coefficient on log(beer_floz) is associated with elasticity.
+# New flexibility being added is volume sensitivity in Model 2 and promotion effect in Model 3
+
+
+
+
+### Question 4 — Estimate, predict, and evaluate
+
+Using `beer_train`:
+
+1. Fit **Model 1**, **Model 2**, and **Model 3** using `lm()`.
+2. Provide a regression table or `summary()` output for each model.
+3. Using `beer_test`, generate **out-of-sample predictions**:
+   - predict $\log(\text{price\_floz})$
+   - convert predictions back to `price_floz` using `exp()`
+4. Evaluate predictive performance on `beer_test`:
+   - report **RMSE** (required)
+
+**Requirements:**
+
+- Present results in a small table comparing Model 1–3 test RMSE.
+- Briefly comment on which model predicts best and by how much.
+
+**Answer:**
+```{r}
+beer_train <- beer_train %>%
+  mutate(
+    brand = relevel(factor(brand), ref = "BUD_LIGHT"),
+    market = relevel(factor(market), ref = "BUFFALO-ROCHESTER"),
+    container = factor(container),
+    promo = factor(promo)
+  )
+
+beer_test <- beer_test %>%
+  mutate(
+    brand = relevel(factor(brand), ref = "BUD_LIGHT"),
+    market = relevel(factor(market), ref = "BUFFALO-ROCHESTER"),
+    container = factor(container),
+    promo = factor(promo)
+  )
+beer_train <- beer_train %>%
+  mutate(
+    log_price = log(price_floz),
+    log_volume = log(beer_floz)
+  )
+
+beer_test <- beer_test %>%
+  mutate(
+    log_price = log(price_floz),
+    log_volume = log(beer_floz)
+  )
+
+```
+```{r}
+model1 <- lm(
+  log_price ~ market + brand + container + log_volume,
+  data = beer_train
+)
+summary(model1)
+```
+
+```{r}
+model2 <- lm(
+  log_price ~ market + brand + container +
+    log_volume + brand:log_volume,
+  data = beer_train
+)
+summary(model2)
+```
+
+```{r}
+model3 <- lm(
+  log_price ~ market + container +
+    brand * promo * log_volume,
+  data = beer_train
+)
+summary(model3)
+```
+```{r}
+# predict()
+pred1_log <- predict(model1, newdata = beer_test)
+pred1 <- exp(pred1_log)
+pred2_log <- predict(model2, newdata = beer_test)
+pred2 <- exp(pred2_log)
+pred3_log <- predict(model3, newdata = beer_test)
+pred3 <- exp(pred3_log)
+```
+
+```{r}
+# rmse
+rmse <- function(actual, predicted) {
+  sqrt(mean((actual - predicted)^2))
+}
+rmse1 <- rmse(beer_test$price_floz, pred1)
+rmse2 <- rmse(beer_test$price_floz, pred2)
+rmse3 <- rmse(beer_test$price_floz, pred3)
+
+rmse1
+rmse2
+rmse3
+```
+
+### Question 5 — Interpret market effects (Model 3)
+
+Using **Model 3**, interpret the estimated coefficients for the following market indicators:
+
+1. `market_ALBANY`
+2. `market_EXURBAN_NY`
+3. `market_RURAL_NEW_YORK`
+4. `market_SURBURBAN_NY`
+5. `market_SYRACUSE`
+6. `market_URBAN_NY`
+
+**Requirements:**
+
+- Interpret each coefficient **relative to the reference market** (`BUFFALO-ROCHESTER`), holding other variables fixed.
+- Since the outcome is in logs, convert each coefficient to an approximate percent difference using:
+  - Approximation: $100\times \beta$ (when $|\beta|$ is small)
+  - Exact: $100\times (\exp(\beta)-1)$
+
+Use whichever you prefer, but be consistent.
+
+**Answer:**
+
+```{r}
+# 1. `market_ALBANY` Co = 0.258121 == 2.6%
+# 2. `market_EXURBAN_NY` Co = 0.1062567 == 11.2%
+# 3. `market_RURAL_NEW_YORK` Co = -0/0308202 ==. -3.0%
+# 4. `market_SURBURBAN_NY` Co = 0.1136770 == 12.0%
+# 5. `market_SYRACUSE` Co = -0.0507608 == -5.0%
+# 6. `market_URBAN_NY` Co = 0.1600007 == 17.4%
+```
+
+
+
+### Question 6 — Volume sensitivity and promo (elasticities)
+
+Across the three models, analyze **how sensitive price is to volume**, and how that differs by brand and promo:
+
+1. In **Model 1**, explain what the coefficient on $\log(\text{beer\_floz})$ means.
+2. In **Model 2**, show how the volume sensitivity differs by brand.
+3. In **Model 3**, explain how `promo` changes the sensitivity, and how the effect can differ by brand.
+
+**Requirements:**
+
+- Write the *expression* for the slope of $\log(\text{beer\_floz})$ for:
+  - a particular brand when `promo = FALSE`
+  - the same brand when `promo = TRUE`
+- Provide at least **one numeric example** using estimated coefficients from your Model 3 output (pick any one brand).
+
+**Answer:**
+# In model 1 the coefficient measures elasticity of price in respect to volume.
+
+# In model 2 volume sensitivity differs by brand because the elasticity is adjusted through interactions, causing reductions to fluctuate in comparison to the reference brand.
+
+# In model 3
+# For COORS_LIGHT when promo = FALSE slope = -0.1361, when promo = TRUE  slope = -0.1526.  A 1% increase of volume reduces price by -0.13% when promotion is not used and by -0.15% when promotion is used.
+
+### Question 7 — Residual diagnostics
+
+For each model (1–3), create a residual plot:
+
+- x-axis: fitted values
+- y-axis: residuals
+- include a horizontal line at 0
+
+Then answer:
+
+- Are residuals centered around 0 on average?
+- Do you see systematic patterns (curvature, fan shape / heteroskedasticity, clusters, outliers)?
+- Which model appears to have the best residual behavior?
+
+**Answer:**
+
+```{r}
+library(ggplot2)
+
+# Model 1
+data.frame(
+  fitted = fitted(model1),
+  residuals = resid(model1)
+) |>
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "Model 1 Residual Plot")
+
+# Model 2
+data.frame(
+  fitted = fitted(model2),
+  residuals = resid(model2)
+) |>
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "Model 2 Residual Plot")
+
+# Model 3
+data.frame(
+  fitted = fitted(model3),
+  residuals = resid(model3)
+) |>
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "Model 3 Residual Plot")
+
+```
+
+# In all models points cloud around 0
+# There are some outliers near the bootm of the plot outside of cloud
+# The plots are similar, though Model 3 has the best residual behavior.
+
+### Question 8 — Choose a preferred model
+
+Which model do you prefer most and why? Your answer must reference at least **two** of the following:
+
+- out-of-sample performance (test RMSE)
+- interpretability / simplicity
+- whether interactions are substantively meaningful
+- residual plot patterns
+
+**Answer:**
+
+```{r}
+# I prefer Model 3 because it has the lowest RMSE.
+# Model 3 also has the most residual behavior plot.
+```
+
+
+
+# Part 2. Quarto Blogging
+
+Use the following data frame for Quarto Blogging:
+
+<br>
+
+<p align="center">
+  <img src="https://bcdanl.github.io/lec_figs/ben-jerry-ice-cream.png" width="600px">
+</p>
+
+<br>
+
+```{r}
+#| eval: true
+#| echo: true
+#| warning: false
+
+library(tidyverse)
+ice_cream <- read_csv("https://bcdanl.github.io/data/ben-and-jerry-cleaned.csv")
+```
+
+```{r}
+#| eval: true
+#| echo: false
+#| warning: false
+
+rmarkdown::paged_table(
+  readr::read_csv("https://bcdanl.github.io/data/ben-and-jerry-cleaned.csv"),
+  options = list(rows.print = 25)
+)
+```
+
+<br>
+
+## Variable Description
+
+| **Variable Name**   | **Type**       | **Description** | **Categories / Notes** |
+|---------------------|----------------|-----------------|------------------------|
+| `priceper1`           | Numeric        | The unit price for one product serving (in dollars). | |
+| `flavor_descr`        | Categorical    | Description of the ice cream flavor. | |
+| `size1_descr`         | Categorical    | Package/serving size description. | |
+| `household_id`        | ID             | Household identifier. | |
+| `household_income`    | Numeric-coded  | Household income bracket code. | e.g., 60000 indicates an income range |
+| `household_size`      | Integer        | Number of persons in the household. | |
+| `usecoup`             | Logical        | Coupon used (`TRUE/FALSE`). | |
+| `couponper1`          | Numeric        | Coupon discount per unit. | often 0 if no coupon |
+| `region`              | Categorical    | Region (East/Central/West/South). | |
+| `married`             | Logical        | Married (`TRUE/FALSE`). | |
+| `race`                | Categorical    | Race category. | |
+| `hispanic_origin`     | Logical        | Hispanic origin (`TRUE/FALSE`). | |
+| `microwave`           | Logical        | Owns microwave (`TRUE/FALSE`). | |
+| `dishwasher`          | Logical        | Owns dishwasher (`TRUE/FALSE`). | |
+| `sfh`                 | Logical        | Single-family home (`TRUE/FALSE`). | |
+| `internet`            | Logical        | Has internet (`TRUE/FALSE`). | |
+| `tvcable`             | Logical        | Subscribes to cable TV (`TRUE/FALSE`). | |
+
+<br>
+
+## Part 2 Task — Write a blog post
+
+- Include the **URL** to your published blog post
+
+
+**Answer:**
+```{r}
+
+
+```
+
+

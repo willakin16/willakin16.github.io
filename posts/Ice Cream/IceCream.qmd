@@ -1,0 +1,68 @@
+---
+title: "Ben and Jerry's Ice Cream Data"
+author: Will Akin
+date: 2025-02-11
+categories: [ice-cream, code, analysis]
+image: ben-jerry-ice-cream.png
+
+execute: 
+  warning: false
+  message: false
+  
+toc: true
+---
+```{r}
+#| include: false
+
+library(knitr)
+library(rmarkdown)
+library(ggplot2)
+library(readr)
+library(dplyr)
+
+theme_set(theme_minimal()+
+          theme(strip.background =element_rect(fill="lightgray"),
+                axis.title.x  = element_text(angle = 0,
+                                            size = rel(1.5),
+                                            margin = margin(10,0,0,0)),
+                axis.title.y  = element_text(angle = 0,
+                                            size = rel(1.5),
+                                            margin = margin(0,10,0,0))
+                )
+          )
+```
+
+Let's analyze the `starwars` data:
+
+```{r}
+library(tidyverse)
+ice_cream <- read_csv("https://bcdanl.github.io/data/ben-and-jerry-cleaned.csv")
+```
+
+
+```{r}
+#| results: asis
+rmarkdown::paged_table(ice_cream) 
+```
+```{r}
+# Ice Cream stats
+ice_cream %>%
+  summarise(
+    mean_price = mean(priceper1, na.rm = TRUE),
+    min_price = min(priceper1, na.rm = TRUE),
+    max_price = max(priceper1, na.rm = TRUE)
+  )
+
+```
+
+```{r}
+# Ice Cream Count
+flavor_desc <- ice_cream %>%
+  count(flavor_descr) %>%
+  arrange(-n)
+```
+```{r}
+# 
+```
+
+

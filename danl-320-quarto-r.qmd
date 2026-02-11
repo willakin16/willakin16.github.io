@@ -1,0 +1,410 @@
+---
+title: Linear Regression 
+subtitle: "DANL 320: Big Data Analytics"
+author:
+  - name: Will Akin 
+    affiliation: SUNY Geneseo
+    
+  - name: YOUR COWORKER 1
+    affiliation: SUNY Geneseo
+    
+date: last-modified
+
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  message: false
+  fig-width: 10
+  fig-height: 6
+
+format:
+  html:
+    code-fold: true
+    toc: true
+    toc-title: "Contents"
+    toc-expand: 3
+    number-sections: true
+    code-tools: true
+    highlight-style: atom-one
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(skimr)
+library(ggthemes)
+library(hrbrthemes)
+library(DT)
+library(stargazer)
+library(broom)
+
+theme_set(theme_ipsum()+
+          theme(strip.background =element_rect(fill="lightgray"),
+                axis.title.x = 
+                  element_text(angle = 0,
+                               size = rel(1.33),
+                               margin = margin(10,0,0,0)),
+                axis.title.y = 
+                  element_text(angle = 90,
+                               size = rel(1.33),
+                               margin = margin(0,10,0,0))
+                )
+          )
+```
+
+# Essential Shortcuts
+
+- Adding a code chunk
+ - Mac: command + option + I
+ - We write code within a code chunk
+```{r}
+
+```
+- to run entire lines of code within code chunk
+ - Mac: command + shift + return
+ 
+ - To run a current line of code within a code chunk
+ - Mac: command + return
+ 
+```{r}
+library(tidyverse)
+library(skimr)
+```
+
+#Linear Regression in R
+```{r}
+sale_df <- read_csv("https://bcdanl.github.io/data/home_sales_nyc.csv")
+
+set.seed(123)   # for replication
+
+sale_df <- sale_df |>
+  mutate(gp = runif(n()))
+
+dtrain <- sale_df |> filter(gp >= 0.4)  # ~60%
+dtest  <- sale_df |> filter(gp <  0.4)  # ~40%
+
+nrow(dtrain)/nrow(sale_df)
+```
+```{r}
+colnames(sale_df)
+m1 <- lm(sale_price ~ gross_square_feet, data = dtrain)
+summary(m1)
+```
+ 
+
+ 
+# Prediction
+```{r}
+dtest <- dtest |> 
+  mutate(pred_m1 = predict(m1, newdata = dtest))
+
+# Test RMSE
+rmse_m1 <- dtest |> 
+  mutate(resid_sq = (sale_price - pred_m1)^2) |> 
+  summarize(
+    rmse_m1 = mean(resid_sq)
+    )
+```
+ 
+```{r}
+df_pred <- augment(m1) #broom::
+```
+
+#Multivariate Linear Regression
+```{r}
+#| results: asis
+m2 <- lm(sale_price ~ gross_square_feet + age, data = dtrain)
+
+stargazer(
+  m1, m2,
+  type = "html",
+  title = "Simple vs Multivariate Regression (Training Data)",
+  dep.var.labels = "sale_price",
+  digits = 3
+)
+```
+
+#Dummy Variable
+```{r}
+# Set reference level (omit dummy for Manhattan)
+dtrain <- dtrain |>
+  mutate(borough_name = factor(borough_name)) |> 
+  mutate(borough_name = relevel(borough_name, ref = "Manhattan"))
+
+dtest <- dtest |>
+  mutate(borough_name = factor(borough_name)) |> 
+  mutate(borough_name = relevel(borough_name, ref = "Manhattan"))
+
+m3 <- lm(sale_price ~ gross_square_feet + age + borough_name, data = dtrain)
+
+stargazer(
+  m3,
+  type = "html",
+  title = "Multivariate Regression with Borough Dummies (Reference = Manhattan)",
+  dep.var.labels = "sale_price",
+  digits = 3
+)
+```
+
+# Residual Plot
+```{r}
+aug_m2 <- augment(m2)    # broom::augment()
+
+ggplot(aug_m2, aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, method = "loess") +
+  labs(
+    x = "Fitted values (Model 2)",
+    y = "Residuals",
+    title = "Residual Plot for Model 2"
+  )
+```
+
+# R Basics
+
+> “Tidy datasets are all alike, but every messy dataset is messy in its own way.”
+— Hadley Wickham
+
+R is a powerful language and environment for statistical computing and graphics. It is widely used among statisticians and data analysts for data analysis and developing statistical software. Here are some basic concepts and elements of R to help you get started:
+
+
+<br><br>
+
+## Variables
+Variables in R are used to store data. You can create a variable using the assignment operator `<-` (**option/Alt + -**). For example:
+
+```{r}
+my_variable <- 10
+```
+
+This will store the value `10` in `my_variable`.
+
+<br><br>
+
+## Data Types
+- R has several basic data types:
+
+  - **Numeric**: For decimal values like `2.5`.
+  - **Integer**: For whole numbers like `2L` (the `L` tells R it is an integer).
+  - **Character**: For text or string values, e.g., `"Hello"`.
+  - **Logical**: For boolean values (`TRUE` or `FALSE`).
+
+<br><br>
+
+## Vectors
+Vectors are a basic data structure in R. They contain elements of the same type. You can create a vector using the `c()` function:
+
+```{r}
+my_vector <- c(1, 2, 3, 4, 5)
+```
+
+<br><br>
+
+## Data Frames
+Data frames are used for storing data tables in R. It is a list of vectors of equal length. For example, to create a simple data frame:
+
+```{r}
+df <- data.frame(
+  Name = c("Alice", "Bob"), 
+  Age = c(25, 30)
+  )
+
+```
+
+<br><br>
+
+## Functions
+Functions are used to carry out specific tasks in R. For example, `sum()` is a function that adds numbers together:
+
+```{r}
+sum(1, 2, 3) # Returns 6
+```
+
+<br><br>
+
+## Packages
+R has a vast collection of packages for various statistical tasks. You can install a package using `install.packages("packageName")` and load it using `library(packageName)`.
+
+```{r}
+#| eval: false
+
+# install.packages("tidyverse")
+library(tidyverse)
+```
+
+<br><br>
+
+## Help System
+To get help on a specific function or topic, use the `help()` function or the shorthand `?`, like `?sum` on R Console.
+
+<br><br><br><br>
+
+
+# Linear Regression
+
+```{r}
+#| results: asis
+library(stargazer)
+library(broom)
+
+reg_short <- lm(hwy ~ displ, 
+                data = mpg)
+
+reg_long <- lm(hwy ~ displ + class, 
+               data = mpg)
+
+stargazer(reg_short, reg_long, 
+          type = "html")
+
+pred_long <- augment(reg_long, data = mpg) |> 
+  select(hwy, displ, class, .fitted, .resid)
+
+```
+
+## Load a package for regression tables
+
+- `library(stargazer)` loads **stargazer**, which formats regression output into a clean table  
+  (instead of printing the long `summary(lm(...))` output).
+
+---
+
+## Fit a simple linear regression model (`reg_short`)
+
+- `lm(hwy ~ displ, data = mpg)` estimates the relationship between:
+  - **Outcome (y):** `hwy` = highway miles per gallon
+  - **Predictor (x):** `displ` = engine displacement (engine size)
+
+- In equation form:
+
+  - $hwy_i = \beta_0 + \beta_1 displ_i + u_i$
+
+- Interpretation:
+  - $\beta_1$ tells how much **expected highway MPG** changes when `displ` increases by 1 unit  
+    (holding nothing else constant, because nothing else is included).
+
+---
+
+## Fit a multiple linear regression model (`reg_long`)
+
+- `lm(hwy ~ displ + class, data = mpg)` adds `class` (vehicle class) as an additional predictor.
+
+- In equation form:
+
+  - $hwy_i = \beta_0 + \beta_1 displ_i + \text{(class effects)} + u_i$
+
+- Important detail: `class` is a **categorical** variable.
+  - R automatically converts it into **dummy variables** (indicators).
+  - One class becomes the **reference (baseline)** category.
+  - Each reported class coefficient measures the difference in expected `hwy`  
+    compared with that baseline class, holding `displ` fixed.
+
+---
+
+### 4) Print the regression table
+
+- `stargazer(reg_short, reg_long, type = "html")` prints both models side-by-side.
+- Because `type = "html"`, stargazer outputs **HTML** (best for Quarto/HTML documents).
+- The chunk option `#| results: asis` tells Quarto to **render the HTML as a table**  
+  rather than showing the raw HTML text.
+
+---
+
+## Why compare these two models?
+
+- `reg_short` answers: **How is highway MPG associated with engine displacement (overall)?**
+- `reg_long` answers: **How is highway MPG associated with displacement after comparing within vehicle classes?**
+- Adding `class` can change the `displ` coefficient because vehicle type is related to both  
+  engine size and MPG.
+
+---
+
+## What is happening in prediction with `newdata`?
+
+- `newdata = new_cars` tells R:
+  - “Use the regression model to predict highway MPG for these hypothetical cars.”
+- Output column:
+  - `.fitted` = predicted `hwy` for each row in `new_cars`
+
+⚠️ **Important:** The `class` values must match the categories in the original `mpg$class`.  
+If you type a class name that does not exist, R will return an error.
+
+<br>
+
+# R Visualization
+
+`ggplot2` is a data visualization package for the R programming language, based on the grammar of graphics. The grammar of graphics is a framework for creating graphics in a structured way, focusing on the components of a graphic such as data, aesthetic mappings, geometric objects, statistical transformations, scales, coordinate systems, and facets. `ggplot2` makes it easy to create complex plots from data in a dataframe.
+
+## Key Concepts
+
+- **Data**: The raw data that you want to plot.
+- **aes() (Aesthetic Mappings)**: Defines how data are mapped to color, size, shape, and other visual properties.
+- **Geoms (Geometric Objects)**: The type of objects that represent data points, like points, lines, bars, etc.
+- **Facets**: For creating small multiples, splitting data into subsets and displaying the same plot for each subset.
+- **Scales**: Control how data values are translated to visual properties.
+- **Coordinate Systems**: The plane in which data is plotted, e.g., Cartesian, polar.
+- **Themes**: Control the overall appearance of the plot, like background color, grid lines, and font sizes.
+
+## Examples
+
+Let's go through some examples to illustrate how `ggplot` can be used to create different types of visualizations. 
+
+### Scatter Plot
+
+Creating a scatter plot to explore the relationship between two variables, say `mpg` (miles per gallon) and `wt` (weight of the car) from the `mtcars` dataset.
+
+```{r}
+
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() +
+  labs(x = "Weight of Car", y = "Miles Per Gallon",
+       title = "Scatter plot of MPG vs Car Weight")
+```
+
+This code block creates a scatter plot where car weight is on the x-axis and miles per gallon on the y-axis. Each point represents a car.
+
+### Bar Chart
+
+Creating a bar chart to show the count of cars by the number of cylinders.
+
+```{r}
+ggplot(mtcars, aes(x = factor(cyl))) + 
+  geom_bar() + 
+  labs(x = "Number of Cylinders", y = "Count",
+       title = "Count of Cars by Cylinders")
+```
+
+This plots a bar chart where each bar represents the count of cars with a certain number of cylinders.
+
+### Line Graph
+
+Plotting a line graph, assuming we have a time series data.frame `economics` that is part of `ggplot2` package.
+
+```{r}
+ggplot(economics, aes(x = date, y = unemploy)) + 
+  geom_line() +
+  labs(x = "Year", y = "Number of Unemployed Persons",
+       title = "Unemployment over Time") 
+```
+
+This code plots the unemployment numbers over time, with time on the x-axis and the number of unemployed persons on the y-axis.
+
+### Faceted Plot
+
+Creating a faceted plot to compare scatter plots of `mpg` vs `wt` across different numbers of cylinders.
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() +
+  facet_wrap(~cyl) +
+  labs(title = "MPG vs Weight by Number of Cylinders")
+```
+
+This splits the data into subsets based on the number of cylinders and creates a scatter plot for each subset.
+
+
+# References
+
+- [R for Data Science](http://r4ds.hadley.nz) by [Hadley Wickham](https://hadley.nz)
+
