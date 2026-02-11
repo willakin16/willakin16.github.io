@@ -52,7 +52,6 @@ ice_cream %>%
     min_price = min(priceper1, na.rm = TRUE),
     max_price = max(priceper1, na.rm = TRUE)
   )
-
 ```
 
 ```{r}
@@ -62,7 +61,25 @@ flavor_desc <- ice_cream %>%
   arrange(-n)
 ```
 ```{r}
-# 
+# Ice Cream Filter
+ice_cream %>%
+  filter(region == "West")
+```
+```{r}
+# Group By
+ice_cream %>%
+  group_by(region) %>%
+  summarise(
+    avg_price = mean(priceper1, na.rm = TRUE),
+    median_price = median(priceper1, na.rm = TRUE),
+    n = n()
+  )
+```
+
+```{r}
+# Regression Model
+model <- lm(priceper1 ~ usecoup + household_size + region, data = ice_cream)
+summary(model)
 ```
 
 
