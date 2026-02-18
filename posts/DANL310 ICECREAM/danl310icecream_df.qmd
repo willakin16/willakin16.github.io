@@ -1,0 +1,123 @@
+---
+title: DANL310 ICE CREAM
+author: Will Akin
+date: 2026-02-18
+categories: [ice cream, code, analysis]
+image: images.png
+
+execute: 
+  warning: false
+  message: false
+  
+toc: true
+---
+```{r}
+#| include: false
+
+library(knitr)
+library(rmarkdown)
+library(ggplot2)
+library(readr)
+library(dplyr)
+
+theme_set(theme_minimal()+
+          theme(strip.background =element_rect(fill="lightgray"),
+                axis.title.x  = element_text(angle = 0,
+                                            size = rel(1.5),
+                                            margin = margin(10,0,0,0)),
+                axis.title.y  = element_text(angle = 0,
+                                            size = rel(1.5),
+                                            margin = margin(0,10,0,0))
+                )
+          )
+```
+
+Let's analyze the `icecream` data:
+
+```{r}
+ice_cream <- read_csv("https://bcdanl.github.io/data/ben-and-jerry-cleaned.csv")
+```
+# GGplots
+
+```{r}
+ggplot(ice_cream, 
+       aes(x = priceper1)) +
+  geom_histogram(bins = 20) +
+  labs(title = "Distribution of Price per Unit")
+```
+# This distribution conveys the at what price Ben and Jerry's sells the most ice cream.  According to the graph, Ben and Jerry's recieves most sales at around $3.
+```{r}
+ice_cream <- ice_cream |>
+  mutate(
+    price_category = case_when(
+      priceper1 < 3 ~ "Low",
+      priceper1 < 5 ~ "Medium",
+      TRUE ~ "High"
+    )
+  )
+```
+
+```{r}
+ggplot(ice_cream, 
+       aes(x = region, 
+           y = priceper1,
+           fill= price_category)) +
+  geom_boxplot() +
+  labs(title = "Price per Unit by Region")
+```
+# This visualization conveys price distribution by region with price categories of High, Medium, Low.  All regions have the same Low median price of $2.50.  There are many outliers outside of the box plot in each region.
+
+```{r}
+top_flavors <- ice_cream |> 
+  group_by(flavor_descr, sort = T) |>
+  summarise(
+    n = n()
+  ) |> 
+  arrange(desc(n)) |> 
+  head(10)
+top_flavors
+```
+```{r}
+top_data <- ice_cream |>
+  filter(flavor_descr %in% top_flavors$flavor_descr)
+```
+
+```{r}
+flavor_region_summary <- top_data |>
+  count(region, flavor_descr) |>
+  arrange(region, desc(n))
+
+flavor_region_summary
+```
+```{r}
+ggplot(flavor_region_summary, 
+       aes(x = region, y = n, fill = flavor_descr)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Flavor Distribution by Region",
+    x = "Region",
+    y = "Count",
+    fill = "Flavor"
+  ) +
+  theme_minimal()
+
+```
+# This visualization conveys the flavor distribution by region. Cherry GRCA is the most popular flavor among all regions. Karamel Sutra is the least popular in the South and West, while Americone Dream is least popuar in the East and New York Super Fudge Chunk in the Central region.
+
+```{r}
+ggplot(top_data, 
+       aes(x = region, 
+           y = priceper1, 
+           color = flavor_descr)) +
+  facet_wrap(~ flavor_descr) +
+  geom_point()
+labs(
+    title = "Price by Region for Top Ben & Jerry's Flavors",
+    x = "Region",
+    y = "Price per Unit",
+    color = "Flavor"
+  ) 
+```
+# This visualization conveys price distribution by the top 10 flavors in each region.  There is a lot of price variation between the $2-$5 range in each region.
+
+# While analyzing this data, I first wanted to see the price distribution by region.

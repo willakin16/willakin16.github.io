@@ -1,0 +1,233 @@
+---
+title: "DANL320_Lect3"
+editor: visual
+---
+
+# Logistic Regression Reference
+
+```{r}
+df <- read_csv("https://bcdanl.github.io/data/NatalRiskData.csv")
+paged_table(df)
+```
+
+```{r}
+library(tidyverse)
+library(skimr)
+library(margins)
+library(WVPlots)
+library(stargazer)
+library(broom)
+```
+
+```{r}
+df |> 
+  count(GESTREC3)
+```
+
+```{r}
+df |> 
+  count(DPLURAL)
+```
+
+```{r}
+df |> 
+  count(atRisk)
+```
+
+```{r}
+# Defining Factor levels (before split)
+df <- df |>
+  mutate(
+    # set full factor levels using known categories
+    GESTREC3 = factor(GESTREC3, levels = c(">= 37 weeks", "< 37 weeks")),
+    DPLURAL  = factor(DPLURAL,  levels = c("single", "twin", "triplet or higher")),
+
+    # choose reference categories (baseline)
+    GESTREC3 = relevel(GESTREC3, ref = ">= 37 weeks"),
+    DPLURAL  = relevel(DPLURAL,  ref = "single")
+  )
+
+```
+
+```{r}
+# Splitting Data
+set.seed(1234)
+
+df_split <- df |>
+  mutate(rnd = runif(n()))
+
+dtrain <- df_split |> filter(rnd > 0.3) |> select(-rnd)
+dtest  <- df_split |> filter(rnd <= 0.3) |> select(-rnd)
+```
+
+```{r}
+model <- glm(
+  atRisk ~ PWGT + UPREVIS + CIG_REC +
+           ULD_MECO + ULD_PRECIP + ULD_BREECH +
+           URF_DIAB + URF_CHYPER + URF_PHYPER + URF_ECLAM +
+           GESTREC3 + DPLURAL,
+  data = dtrain,
+  family = binomial(link = "logit")
+)
+```
+
+# Regression Table
+
+```{r}
+stargazer(
+  model,
+  type = "html",
+  digits = 3,
+  title = "Logistic regression (logit): atRisk"
+)
+```
+
+# Beta Estimates (tidy())
+
+```{r}
+model_betas <- tidy(model, 
+                    conf.int = T)  # conf.level = 0.95 (default)
+
+model_betas_90ci <- tidy(model, 
+                       conf.int = T,
+                       conf.level = 0.90)
+
+model_betas_99ci <- tidy(model, 
+                       conf.int = T,
+                       conf.level = 0.99)
+```
+
+```{r}
+month_ci <- bind_rows(
+  model_betas_90ci |> mutate(ci = "90%"),
+  model_betas      |> mutate(ci = "95%"),
+  model_betas_99ci |> mutate(ci = "99%")
+) |>
+  mutate(ci = factor(ci, levels = c("90%", "95%", "99%")))
+
+ggplot(
+  data = month_ci |> 
+    filter(!str_detect(term, "Intercept")),
+  aes(
+    y = term,
+    x = estimate,
+    xmin = conf.low,
+    xmax = conf.high,
+    color = ci
+  )
+) +
+  geom_vline(xintercept = 0, color = "maroon", linetype = 2) +
+  geom_pointrange(
+    position = position_dodge(width = 0.6)
+  ) +
+  labs(
+    color = "CI level",
+    y = ""
+  ) 
+```
+
+```{r}
+ggplot(
+  data = month_ci |> 
+    filter(term %in% c("UPREVIS", "PWGT")),
+  aes(
+    y = term,
+    x = estimate,
+    xmin = conf.low,
+    xmax = conf.high,
+    color = ci
+  )
+) +
+  geom_vline(xintercept = 0, color = "maroon", linetype = 2) +
+  geom_pointrange(
+    position = position_dodge(width = 0.6)
+  ) +
+  labs(
+    color = "CI level",
+    y = ""
+  ) 
+```
+
+# Model Fit (glance())
+
+```{r}
+model |> 
+  glance() |> 
+  paged_table()
+```
+
+```{r}
+me <- margins(model)
+sum_me <- summary(me)
+sum_me
+```
+
+```{r}
+summary(
+  margins(model, 
+          variables = c("PWGT", "UPREVIS"))
+)
+```
+
+# Marginal Effects Plot
+
+```{r}
+df_ame <- sum_me |>
+  as_tibble() |>
+  rename(
+    term = factor,
+    ame  = AME,
+    se   = SE
+  )
+
+# Pair each level with the correct z (NOT a Cartesian product)
+ci_levels <- tibble(
+  level = c("90%", "95%", "99%"),
+  zcrit = c(1.645, 1.96, 2.576)
+)
+
+df_ame_ci <- df_ame |>
+  tidyr::crossing(level = ci_levels$level) |>
+  left_join(ci_levels, by = "level") |>
+  mutate(
+    conf.low  = ame - zcrit * se,
+    conf.high = ame + zcrit * se
+  )
+
+ggplot(df_ame_ci,
+       aes(x = fct_reorder(term, ame), y = ame)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_pointrange(
+    aes(ymin = conf.low, ymax = conf.high, color = level),
+    position = position_dodge(width = 0.6)
+  ) +
+  coord_flip() +
+  labs(
+    x = NULL,
+    y = "Average marginal effect (AME)",
+    color = "CI level",
+    title = "Average Marginal Effects (90/95/99% CIs)"
+  )
+```
+
+```{r}
+ggplot(data = df_ame_ci |> 
+         filter(term %in% c("PWGT", "UPREVIS") ), 
+       aes(x = fct_reorder(term, ame), 
+           y = ame)) +
+  geom_hline(yintercept = 0, 
+             linetype = "dashed") +
+  geom_pointrange(
+    aes(ymin = conf.low, 
+        ymax = conf.high, 
+        color = level),
+    position = position_dodge(width = 0.6)
+  ) +
+  coord_flip() +
+  labs(
+    x = NULL,
+    y = "Average marginal effect (AME)",
+    color = "CI level",
+    title = "Average Marginal Effects"
+  )
+```
