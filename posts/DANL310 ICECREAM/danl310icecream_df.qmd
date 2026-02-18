@@ -120,4 +120,4 @@ labs(
 ```
 # This visualization conveys price distribution by the top 10 flavors in each region.  There is a lot of price variation between the $2-$5 range in each region.
 
-# While analyzing this data, I first wanted to see the price distribution by region.
+# While analyzing this data, I first wanted to see the price distribution. Then I wanted to see how price distribution  by region, with catecorical values for different price levels.  Next I looked at the top 10 flavors and how they distributed by price.  Lastly I looked at how price distribution by region differed by the top 10 flavors
