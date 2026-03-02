@@ -1,7 +1,7 @@
 ---
-title: Starwars
+title: Beer Markets
 author: Will Akin
-date: 2025-01-22
+date: 2026-03-02
 categories: [beer_markets, code, analysis]
 image: Image_beer.png
 
@@ -80,5 +80,6 @@ beer_markets %>%
 model <- lm(price_floz ~ dollar_spent + quantity + brand, data = beer_markets)
 summary(model)
 ```
- 
+
+
 
