@@ -1,0 +1,84 @@
+---
+title: Starwars
+author: Will Akin
+date: 2025-01-22
+categories: [beer_markets, code, analysis]
+image: Image_beer.png
+
+execute: 
+  warning: false
+  message: false
+  
+toc: true
+---
+```{r}
+#| include: false
+
+library(knitr)
+library(rmarkdown)
+library(ggplot2)
+library(readr)
+library(dplyr)
+
+theme_set(theme_minimal()+
+          theme(strip.background =element_rect(fill="lightgray"),
+                axis.title.x  = element_text(angle = 0,
+                                            size = rel(1.5),
+                                            margin = margin(10,0,0,0)),
+                axis.title.y  = element_text(angle = 0,
+                                            size = rel(1.5),
+                                            margin = margin(0,10,0,0))
+                )
+          )
+```
+
+Let's analyze the `beer_market` data:
+
+```{r}
+library(tidyverse)
+
+beer_markets <- read_csv(
+  "https://bcdanl.github.io/data/beer_markets_all_cleaned.csv"
+)
+```
+
+
+```{r}
+#| results: asis
+rmarkdown::paged_table(beer_markets) 
+```
+
+# This data set describes the beer market and contains information on quantity, brand, dollar_spent, beer_floz, price_floz, and container.  Throughout this blog post, I will explore how different beer brands compare to one another.
+
+```{r}
+beer_markets %>%
+  summarise(
+    mean_price = mean(price_floz, na.rm = TRUE),
+    min_price = min(price_floz, na.rm = TRUE),
+    max_price = max(price_floz, na.rm = TRUE)
+  )
+```
+```{r}
+filtered<- beer_markets %>%
+  filter(brand == "BUD_LIGHT")
+brand_desc <- filtered %>%
+  count(quantity) %>%
+  arrange(n)
+```
+
+```{r}
+beer_markets %>%
+  group_by(brand) %>%
+  summarise(
+    avg_price = mean(price_floz, na.rm = TRUE),
+    median_price = median(price_floz, na.rm = TRUE),
+    n = n()
+  )
+```
+```{r}
+# Regression Model
+model <- lm(price_floz ~ dollar_spent + quantity + brand, data = beer_markets)
+summary(model)
+```
+ 
+
