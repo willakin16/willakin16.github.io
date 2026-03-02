@@ -612,21 +612,6 @@ not_cancelled |>
 ```
 
 ```{r}
-not_cancelled |>
-  group_by(year, month, day) |>
-```
-
-```{r}
-flights |> 
-  filter
-```
-
-```{r}
-flights |>
-  filter dest == "IAH", "HOUST"
-```
-
-```{r}
 flights |> 
   filter(month %in% c(7,8,9))
 ```
@@ -639,37 +624,8 @@ flights |>
 ```
 
 ```{r}
-flights |> 
-  filter(dep_time >= 0 & dep_time <= 600) | dep_time == 2400) |> arrange(dep_time)
-```
-
-```{r}
-# Question 2
-flights |>
-  skim
-```
-
-```{r}
 flights |>
   arrange(is.na(dep_delay))
-```
-
-# Question 3
-
-```{r}
-flights |>
-  select(ends_with("_time"), end_with("delay"))
-```
-
-# Question 4
-
-```{r}
-q4_arr <- flights |>
-  mutate(rank_min = min_rank(-arr_delay),
-         rank_dense = dense_rank
-         
-
-         
 ```
 
 ```{r}
@@ -693,10 +649,6 @@ q7 <- flights |>
   mutate(prop = 100 * n / sum(n)) |> 
   filter(is_delayed) |> 
   arrange(prop)
-```
-
-```{r}
-q8 <- 
 ```
 
 ```{r}

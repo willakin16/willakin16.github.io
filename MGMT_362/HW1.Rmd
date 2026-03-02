@@ -1,0 +1,256 @@
+---
+title: "HW1: Data Manipulation"
+author: "Will Akin"
+date: "Due: 02/22/26 (Submit BOTH RMD and HTML to Brightspace)"
+---
+
+# 0. Instructions (READ FIRST)
+
+- Download the `HW1.Rmd` file from Brightspace.
+- Move `HW1.Rmd` into our class R project folder.
+- Open `HW1.Rmd` in RStudio.
+- Fill in your answers directly in `HW1.Rmd`.
+- Knit `HW1.Rmd` (this will create `HW1.html`).
+- Submit **both** `HW1.Rmd` and `HW1.html` to Brightspace.
+- Due **02/22/26**.
+
+# 1. Business scenario
+
+Suppose you work for an animal nutrition company that sells 4 feed formulas (Diet 1–4).
+
+Your manager might ask: Which diet produces the **largest average weight gain** from day 0 to day 21, or other related questions.
+
+You will try to answer these questions using tidy data manipulation and clear visuals.
+
+# 2. Setup and data load with base R (don't change code in this section)
+
+```{r,message = FALSE}
+# CORE packages used in lecture for data manipulation
+library(tidyverse)   # dplyr, tidyr, ggplot2, readr, tibble, etc.
+library(lubridate)   # date tools (we will create a date column)
+library(scales)      # formatting numbers in plots/tables
+data("ChickWeight")
+cw_raw <- as_tibble(ChickWeight)
+```
+
+# 3. Check data structure
+
+**Instruction:**
+
+- Use a function to check the head of `cw_raw`.
+
+So, you are expected to see the **original variables** below:
+
+- `weight`: chick body weight (grams)
+- `Time`: time in days
+- `Chick`: chick ID
+- `Diet`: diet group (1–4)
+
+```{r}
+### Insert your code below
+head(cw_raw)
+```
+
+# 4. Rename and type-clean
+
+**Instruction:**  
+Create `cw` with these changes:
+
+- rename below variables
+  - rename `Time` → `day` (hint: use the `rename()` function; if you are unsure about the parameters, run `?rename` in the Console to open the Help page in RStudio)
+  - rename `Diet` → `diet`
+  - rename `Chick` → `chick`
+- mutate below variables
+  - convert `chick` to character (so it behaves like an ID)
+  - convert `diet` to factor
+- arrange by `diet`, `chick`, `day`
+- check the head of the `cw` data
+
+```{r}
+### Insert your code below
+cw <- cw_raw %>% 
+  rename(day = Time) %>% 
+  rename(diet = Diet) %>% 
+  rename(chick = Chick) %>% 
+  mutate(chick = as.character(chick)) %>% 
+  mutate(diet = as.factor(diet)) %>%
+  arrange(diet, chick, day)
+
+head(cw)
+```
+
+# 5. Compute average weight by diet and day
+
+**Instruction:** Create `diet_curve` dataset:
+
+- group by `diet` and `day`
+- summarise the information below (drop the groups at the end)
+  - compute new variables: `avg_weight` (mean), `sd_weight` (standard deviation), and `n`
+- mutate `se = sd_weight / sqrt(n)`
+- check the head of the `diet_curve` data
+
+```{r}
+### Insert your code below
+diet_curve <- cw %>% 
+  group_by(diet, day) %>% 
+  summarise(
+  avg_weight = mean(weight), 
+  sd_weight = sd(weight),
+  n = n(),
+  .groups = "drop") %>% 
+  mutate(se = sd_weight / sqrt(n))
+head(diet_curve)
+```
+
+# 6. Plot growth curves based on `diet_curve`
+
+**Instruction:** Make a line chart:
+
+- x = `day`
+- y = `avg_weight`
+- color = `diet`
+- line chart
+- include points (hint: use `geom_point()`)
+- y-axis scale with labels
+- in `labs()`, include a clear title and axis labels
+- use `theme_minimal()`
+
+```{r}
+### Insert your code below
+diet_curve %>% 
+  ggplot(aes(x = day, y = avg_weight)) +
+  geom_line() +
+  scale_y_continuous(labels = label_number()) +
+  labs(
+    x = "Day",
+    y = "Avg Weight",
+    title = "Avg Weight By Day"
+  ) +
+  theme_minimal()
+```
+
+# 7. Create a synthetic date
+
+In lecture, we practiced creating date columns using `lubridate`. Here we create a synthetic calendar date starting at **2026-01-01**, using `cw` data at Section 4.
+
+**Instruction:**
+
+- define `start_date` as the date of **2026-01-01**.
+- using pipe operator update `cw` dataset, and mutate the `date` variable using `start_date` and `day` (make sure `day` is converted to a `days()` format).
+- check the head of the `cw` data again.
+
+```{r}
+### insert your code below
+start_date <- as.Date("2026-01-01")
+
+cw |>
+  mutate(date = start_date + days(day))
+
+head(cw)
+```
+
+# 8. Keep chicks with the full treatment period
+
+**Instruction:** Some chicks have missing days; keep only chicks that have **both day 0 and day 21**.
+
+- continue update the `cw` dataset.
+- group by `chick`.
+- filter to keep only chicks whose `day` values include both 0 and 21 (hint: use `all(c(0, 21) %in% day)` to return a single logical value).
+- ungroup.
+
+```{r}
+### insert your code below
+cw %>% 
+  group_by(chick) %>% 
+  filter(all(c(0, 21) %in% day)) %>% 
+  ungroup()
+```
+
+# 9. Create a per-chick-diet summary table
+
+**Instruction:** Create `chick_growth` with one row per chick and diet:
+
+- name this summary dataset `chick_growth` based on `cw`.
+- group by `chick` and `diet`.
+- summarise two weight variables at day 0 and 21 (drop the groups at the end):
+  - `w0` = weight at day 0 (hint: `new_variable = weight[condition_for_day_0]`)
+  - `w21` = weight at day 21
+- mutate two variables for gain and percent gain:
+  - `gain_0_21 = w21 - w0`
+  - `pct_gain_0_21 = (w21 / w0) - 1`
+- arrange/order the `diet` and descending order for `gain_0_21`
+- check the head of `chick_growth` with 10 observations.
+
+```{r}
+### insert your code below
+chick_growth <- cw %>% 
+  group_by(chick, diet) %>% 
+  summarise(
+    w0 = weight[day == 0],
+    w21 = weight[day == 21],
+    .groups = "drop"
+  ) %>% 
+  mutate(gain_0_21 = w21 - w0,
+         pct_gain_0_21 = (w21 / w0) - 1) %>% 
+  arrange(desc(gain_0_21))
+head(chick_growth)
+```
+
+# 10. Diet-level KPI table
+
+**Instruction:** Create `diet_kpis` with one row per diet based on `chick_growth`:
+
+- name this summary dataset `diet_kpis` based on `chick_growth`.
+- group by `diet`.
+- summarise the information below (drop the groups at the end):
+  - `n_chicks`: number of chicks per diet
+  - `avg_gain`: mean of `gain_0_21`
+  - `med_gain`: median of `gain_0_21`
+  - `sd_gain`: standard deviation of `gain_0_21`
+  - `avg_pct_gain`: mean of `pct_gain_0_21`
+- sort by `avg_gain` (descending).
+- check the head of `diet_kpis`.
+
+```{r}
+### insert your code below
+diet_kpis <- chick_growth %>% 
+  group_by(diet) %>% 
+  summarise(
+    n_chicks = n(),
+    avg_gain = mean(gain_0_21),
+    med_gain = median(gain_0_21),
+    sd_gain = sd(gain_0_21),
+    avg_pct_gain = mean(pct_gain_0_21),
+    .groups = "drop") %>% 
+    arrange(desc(avg_gain))
+head(diet_kpis)
+```
+
+# 11. Written takeaway
+
+In 2–4 sentences, conclude the data analysis above (write your paragraph below):
+# Throughout this data analysis, I looked at the growth trend of chicks over 21 days.  Additionally, the chicks were segmented into 4 different diets, where effects on weight gain were analyzed.  The average weight gain for chicks on diet 1 = 136 , diet 2 = 174, diet 3 = 229.5, and diet 4 = 197.67  Diet 3 had the most significant weight gain.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

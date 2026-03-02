@@ -232,7 +232,6 @@ mlb_hit_pct <- mlb_bat |>
   )
 
 mlb_hit_pct
-
 ```
 
 <br>
@@ -675,4 +674,4 @@ Include the URL to your published blog post.
 
 **Answer:**
 
-
+file:///Users/willakin/Documents/willakin16.github.io/posts/DANL310%20ICECREAM/danl310icecream_df.html

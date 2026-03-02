@@ -1,0 +1,209 @@
+---
+title: "DANL320CW4"
+editor: visual
+---
+
+# Classwork 4
+
+```{r}
+library(tidyverse)
+library(broom)
+library(stargazer)
+library(margins)
+# library(yardstick)
+library(WVPlots)
+library(stargazer)
+```
+
+```{r}
+titanic <- read_csv("https://bcdanl.github.io/data/titanic_details.csv")
+
+titanic |> 
+  rmarkdown::paged_table()
+```
+
+### 3.1 A1) Outcome rate
+
+1.  Compute the **overall survival rate**.
+
+2.  Report it as a proportion and as a percent
+
+```{r}
+titanic |> 
+  count(survived) |> 
+  mutate(tot = sum(n)) |> 
+  mutate(prop = n / tot)
+```
+
+```{r}
+342/(342+549)
+```
+
+### 3.2 A2) Basic group comparisons
+
+Compute survival rates by:
+
+-   `gender`
+
+-   `class`
+
+```{r}
+titanic |> 
+  count(gender, survived)
+```
+
+```{r}
+titanic |> 
+  count(gender, survived) |> 
+  group_by(gender) |> 
+  mutate(tot = sum(n)) |> 
+  mutate(prop = n / tot)
+```
+
+```{r}
+titanic |> 
+  count(class, survived) |> 
+  group_by(class) |> 
+  mutate(tot = sum(n)) |> 
+  mutate(prop = n / tot)
+```
+
+```{r}
+titanic |> 
+  count(class, gender, survived) |> 
+  group_by(class, gender) |> 
+  mutate(tot = sum(n)) |> 
+  mutate(prop = n / tot)
+```
+
+# 4 Split
+
+```{r}
+titanic <- titanic |> 
+  mutate(class = factor(class))
+  levels(titanic$class)
+```
+
+```{r}
+set.seed(1234)
+
+titanic <- titanic |>
+  mutate(rnd = runif(n()))
+
+dtrain <- titanic |> filter(rnd >= 0.20) |> select(-rnd)
+dtest  <- titanic |> filter(rnd < 0.20)
+```
+
+# Baseline Model
+
+```{r}
+model1 <- lm(survived ~ age + gender, data = titanic)
+```
+
+```{r}
+model1$call
+formula(model1)
+```
+
+```{r}
+stargazer(model1,
+          type = "text")
+```
+
+```{r}
+summary(
+  margins(model1)
+)
+```
+
+```{r}
+model2 <- glm(
+  survived ~ gender + class + age + fare,
+  data = dtrain,
+  family = binomial
+)
+```
+
+# Confusion Matrix
+
+```{r}
+threshold <- 0.02
+
+df_cm <- model2 |>
+  augment(newdata = dtest,
+          type.predict = "response") |> 
+  mutate(
+    actual = factor(survived, 
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived")),
+    pred   = factor(if_else(.fitted > threshold, 1, 0),
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived"))
+  )
+
+conf_mat <- table(truth = df_cm$actual,
+                  prediction = df_cm$pred)
+conf_mat
+```
+
+```{r}
+threshold <- 0.3
+
+df_cm <- model2 |>
+  augment(newdata = dtest,
+          type.predict = "response") |> 
+  mutate(
+    actual = factor(survived, 
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived")),
+    pred   = factor(if_else(.fitted > threshold, 1, 0),
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived"))
+  )
+
+conf_mat <- table(truth = df_cm$actual,
+                  prediction = df_cm$pred)
+conf_mat
+```
+
+```{r}
+threshold <- 0.5
+
+df_cm <- model2 |>
+  augment(newdata = dtest,
+          type.predict = "response") |> 
+  mutate(
+    actual = factor(survived, 
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived")),
+    pred   = factor(if_else(.fitted > threshold, 1, 0),
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived"))
+  )
+
+conf_mat <- table(truth = df_cm$actual,
+                  prediction = df_cm$pred)
+conf_mat
+```
+
+```{r}
+threshold <- 0.7
+
+df_cm <- model2 |>
+  augment(newdata = dtest,
+          type.predict = "response") |> 
+  mutate(
+    actual = factor(survived, 
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived")),
+    pred   = factor(if_else(.fitted > threshold, 1, 0),
+                    levels = c(0, 1), 
+                    labels = c("not survived", "survived"))
+  )
+
+conf_mat <- table(truth = df_cm$actual,
+                  prediction = df_cm$pred)
+conf_mat
+```
+
+# Part 8
