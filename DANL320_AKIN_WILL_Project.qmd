@@ -1,0 +1,735 @@
+---
+title: "DANL320_Project"
+format: html
+editor: visual
+---
+
+# Introduction
+
+Mental health is an important public health issue that affects people of all ages and backgrounds. Conditions such as anxiety, depression, and stress are influenced by many different factors, including sleep habits, work and financial stress, social support, and lifestyle choices. Studying these factors together can help us better understand what contributes to poor or improved mental health.
+
+This topic is important because mental health is not caused by a single factor—it is shaped by a combination of social, behavioral, and personal conditions. Using data analysis allows us to identify patterns and relationships that may not be obvious in everyday life. From a data analytics and sociomedical science perspective, this provides an opportunity to apply statistical methods to real-world health challenges and potentially support early identification of at-risk individuals.
+
+The goal of this project is to find which variables are the best predictors of mental health outcomes, specifically anxiety, depression, and stress levels, using both linear regression and decision tree models.
+
+# Data- Source and Scope
+
+The data set I used is called Anxiety and Depression Mental Health Factors. I retrieved this data from Kaggle. I accessed this data on April 20th. This dataset contains related to anxiety, depression, and mental health influences. It includes demographic details, lifestyle habits, mental health indicators, medical history, coping mechanisms, and stress factors. The dataset is designed for mental health analysis, predictive modeling, and research on the impact of various factors on mental well-being. The link is <https://www.kaggle.com/datasets/ak0212/anxiety-and-depression-mental-health-factors>
+
+# Loading In Packages
+
+```{r}
+library(tidyverse)
+df <- read_csv("/Users/willakin/Documents/DANL 310/DANL 310/DANL 310/anxiety_depression_data.csv")
+```
+
+# Cleaning data
+
+I cleaned the data by refactoring the data variables. I also reshaped the data frame to Outcome and Score for a better analysis on how the variables of Score impact the variables of Outcome.
+
+```{r}
+# View structure
+str(df)
+
+# Convert categorical variables to factors
+df <- df %>%
+  mutate(
+    Gender = as.factor(Gender),
+    Education_Level = as.factor(Education_Level),
+    Employment_Status = as.factor(Employment_Status),
+    Family_History_Mental_Illness = as.factor(Family_History_Mental_Illness),
+    Therapy = as.factor(Therapy),
+    Meditation = as.factor(Meditation),
+    Substance_Use = as.factor(Substance_Use),
+    Medication_Use = as.factor(Medication_Use)
+  )
+
+# Check missing values
+colSums(is.na(df))
+
+# OPTIONAL: scale numeric variables for ML/clustering later
+num_vars <- df %>%
+  select(where(is.numeric)) %>%
+  scale() %>%
+  as.data.frame()
+
+df_scaled <- df
+df_scaled[names(num_vars)] <- num_vars
+```
+
+```{r}
+ggplot(df, aes(x = Anxiety_Score)) +
+  geom_histogram(bins = 15)
+
+ggplot(df, aes(x = Depression_Score)) +
+  geom_histogram(bins = 15)
+
+ggplot(df, aes(x = Stress_Level)) +
+  geom_histogram(bins = 15)
+```
+
+```{r}
+library(tidyverse)
+library(viridis)
+
+df_long <- df %>%
+  pivot_longer(
+    cols = c(Anxiety_Score, Depression_Score, Stress_Level),
+    names_to = "Measure",
+    values_to = "Score"
+  )
+
+ggplot(df_long, aes(x = Score, fill = after_stat(count))) +
+  geom_histogram(bins = 15, color = "white") +
+  facet_wrap(~ Measure, scales = "free_x") +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Mental Health Measures",
+    x = "Score",
+    y = "Count",
+    fill = "Frequency"
+  )
+```
+
+# Exploratory Analysis
+
+```{r}
+library(tidyverse)
+
+summary_table <- df %>%
+  summarise(
+    Anxiety_Mean = mean(Anxiety_Score, na.rm = TRUE),
+    Anxiety_SD = sd(Anxiety_Score, na.rm = TRUE),
+
+    Depression_Mean = mean(Depression_Score, na.rm = TRUE),
+    Depression_SD = sd(Depression_Score, na.rm = TRUE),
+
+    Stress_Mean = mean(Stress_Level, na.rm = TRUE),
+    Stress_SD = sd(Stress_Level, na.rm = TRUE)
+  )
+summary_table
+```
+
+I conducted an Exploratory Analysis where I found the mean anxiety, depression, and stress level. These statistics are important to the audience because one use averages as benchmarks. Additionally, I created a histogram conveying the distribution of anxiety, depression, and stress level by overall count. This allows the audience to see the overall distribution of mental health scores.
+
+# Supervised Learning Models
+
+For one of my supervised models I chose to do three linear regression models to see the different variables correlate with anxiety score, depression score, and stress level score.
+
+```{r}
+# Prepare Data
+set.seed(123)
+
+df <- df |> 
+  mutate(rnd = runif(n()))
+
+dtrain <- df |> 
+  filter(rnd > 0.4)
+
+dtest <- df |> 
+  filter(rnd <= 0.4)
+
+nrow(dtrain) / nrow(df)
+```
+
+# Testing variables predicting high anxiety levels
+
+```{r}
+anxiety_model <- lm(Anxiety_Score ~ Age + Gender + Education_Level +
+   Sleep_Hours + Physical_Activity_Hrs +
+   Social_Support_Score + Financial_Stress +
+   Work_Stress + Substance_Use +
+   Self_Esteem_Score + Loneliness_Score,
+   data = dtrain)
+```
+
+```{r}
+library(stargazer)
+stargazer(anxiety_model, type = "html")
+```
+
+```{r}
+library(tidyverse)
+library(broom)
+
+model_betas <- tidy(anxiety_model, 
+                    conf.int = T)  # conf.level = 0.95 (default)
+
+model_betas_90ci <- tidy(anxiety_model, 
+                       conf.int = T,
+                       conf.level = 0.90)
+
+model_betas_99ci <- tidy(anxiety_model, 
+                       conf.int = T,
+                       conf.level = 0.99)
+
+rmarkdown::paged_table(model_betas)
+```
+
+```{r}
+model_pred_train <- augment(anxiety_model)
+
+rmarkdown::paged_table(model_pred_train)
+```
+
+```{r}
+model_pred_test <- augment(anxiety_model, newdata = dtest)
+
+rmarkdown::paged_table(model_pred_test)
+```
+
+```{r}
+model_r2 <- glance(anxiety_model)
+
+rmarkdown::paged_table(model_r2)
+```
+
+```{r}
+library(ggplot2)
+library(stringr)
+
+model_betas |> 
+  filter(str_detect(term, "Sleep|Physical|Social|Financial|Work|Self|Loneliness")) |> 
+  mutate(term = reorder(term, estimate)) |> 
+  ggplot(aes(
+    x = estimate,
+    y = term,
+    xmin = conf.low,
+    xmax = conf.high
+  )) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, color = "darkorange", linetype = 2) +
+  labs(y = "", x = "Effect on Anxiety Score")
+```
+
+```{r}
+model_pred_test |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, method = "loess") +
+  labs(
+    x = "Fitted values",
+    y = "Residuals",
+    title = "Residual Plot for Test Data"
+  )
+```
+
+```{r}
+model_pred_train |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, method = "loess") +
+  labs(
+    x = "Fitted values",
+    y = "Residuals",
+    title = "Residual Plot for Training Data"
+  )
+```
+
+```{r}
+#RMSE
+
+pred <- predict(anxiety_model, newdata = dtest)
+
+rmse <- sqrt(mean((dtest$Anxiety_Score - pred)^2))
+rmse
+```
+
+# Interpretation of Anxiety Model
+
+Interpretation: Positive correlation- sleep, loneliness, physical activity, and financial stress; Negative correlation- work stress, self esteem score, and social support. An RMSE score of 6.10 suggests that there is a weak predictive power.
+
+# Testing variables predicting high depression levels
+
+```{r}
+depression_model <- lm(Depression_Score ~ Age + Gender + Education_Level +
+   Sleep_Hours + Physical_Activity_Hrs +
+   Social_Support_Score + Financial_Stress +
+   Work_Stress + Substance_Use +
+   Self_Esteem_Score + Loneliness_Score,
+   data = dtrain)
+```
+
+```{r}
+library(stargazer)
+stargazer(depression_model, type = "html")
+```
+
+```{r}
+library(tidyverse)
+library(broom)
+
+model_betas1 <- tidy(depression_model, 
+                    conf.int = T)  # conf.level = 0.95 (default)
+
+model_betas_90ci1 <- tidy(depression_model, 
+                       conf.int = T,
+                       conf.level = 0.90)
+
+model_betas_99ci1 <- tidy(depression_model, 
+                       conf.int = T,
+                       conf.level = 0.99)
+
+rmarkdown::paged_table(model_betas1)
+```
+
+```{r}
+model_pred_train1 <- augment(depression_model)
+
+rmarkdown::paged_table(model_pred_train1)
+```
+
+```{r}
+model_pred_test1 <- augment(depression_model, newdata = dtest)
+
+rmarkdown::paged_table(model_pred_test1)
+```
+
+```{r}
+model_r3 <- glance(depression_model)
+
+rmarkdown::paged_table(model_r3)
+```
+
+```{r}
+library(ggplot2)
+library(stringr)
+
+model_betas1 |> 
+  filter(str_detect(term, "Sleep|Physical|Social|Financial|Work|Self|Loneliness")) |> 
+  mutate(term = reorder(term, estimate)) |> 
+  ggplot(aes(
+    x = estimate,
+    y = term,
+    xmin = conf.low,
+    xmax = conf.high
+  )) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, color = "darkorange", linetype = 2) +
+  labs(y = "", x = "Effect on Depression Score")
+```
+
+```{r}
+model_pred_test1 |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, method = "loess") +
+  labs(
+    x = "Fitted values",
+    y = "Residuals",
+    title = "Residual Plot for Test Data"
+  )
+```
+
+```{r}
+model_pred_train1 |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, method = "loess") +
+  labs(
+    x = "Fitted values",
+    y = "Residuals",
+    title = "Residual Plot for Training Data"
+  )
+```
+
+```{r}
+#RMSE
+
+pred1 <- predict(depression_model, newdata = dtest)
+
+rmse1 <- sqrt(mean((dtest$Depression_Score - pred)^2))
+rmse1
+```
+
+# Interpretation of Depression Model
+
+Interpretation: Positive correlation- sleep, social support, financial stress; Negative correlation- self-esteem and loneliness. An RMSE score of 5.71 again suggests there is not an overly strong predictive power.
+
+# Testing variables predicting high stress levels
+
+```{r}
+stress_model <- lm(Stress_Level ~ Age + Gender + Education_Level +
+   Sleep_Hours + Physical_Activity_Hrs +
+   Social_Support_Score + Financial_Stress +
+   Work_Stress + Substance_Use +
+   Self_Esteem_Score + Loneliness_Score,
+   data = dtrain)
+```
+
+```{r}
+library(stargazer)
+stargazer(stress_model, type = "html")
+```
+
+```{r}
+library(tidyverse)
+library(broom)
+
+model_betas2 <- tidy(stress_model, 
+                    conf.int = T)  # conf.level = 0.95 (default)
+
+model_betas_90ci2 <- tidy(stress_model, 
+                       conf.int = T,
+                       conf.level = 0.90)
+
+model_betas_99ci2 <- tidy(stress_model, 
+                       conf.int = T,
+                       conf.level = 0.99)
+
+rmarkdown::paged_table(model_betas2)
+```
+
+```{r}
+model_pred_train2 <- augment(stress_model)
+
+rmarkdown::paged_table(model_pred_train2)
+```
+
+```{r}
+model_pred_test2 <- augment(stress_model, newdata = dtest)
+
+rmarkdown::paged_table(model_pred_test2)
+```
+
+```{r}
+model_r4 <- glance(stress_model)
+
+rmarkdown::paged_table(model_r4)
+```
+
+```{r}
+library(ggplot2)
+library(stringr)
+
+model_betas2 |> 
+  filter(str_detect(term, "Sleep|Physical|Social|Financial|Work|Self|Loneliness")) |> 
+  mutate(term = reorder(term, estimate)) |> 
+  ggplot(aes(
+    x = estimate,
+    y = term,
+    xmin = conf.low,
+    xmax = conf.high
+  )) +
+  geom_pointrange() +
+  geom_vline(xintercept = 0, color = "darkorange", linetype = 2) +
+  labs(y = "", x = "Effect on Stress Score")
+```
+
+```{r}
+model_pred_test2 |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, method = "loess") +
+  labs(
+    x = "Fitted values",
+    y = "Residuals",
+    title = "Residual Plot for Test Data"
+  )
+```
+
+```{r}
+model_pred_train2 |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, method = "loess") +
+  labs(
+    x = "Fitted values",
+    y = "Residuals",
+    title = "Residual Plot for Training Data"
+  )
+```
+
+```{r}
+#RMSE
+
+pred2 <- predict(stress_model, newdata = dtest)
+
+rmse <- sqrt(mean((dtest$Stress_Level - pred)^2))
+rmse
+```
+
+# Interpretation of Stress Model
+
+Interpretation: Positive correlation- social support, self-esteem, and work stress; Negative correlation- financial stress, loneliness score, physical activity, sleep. An RMSE of 6 again suggests weak predictive power.
+
+# Comparisons Across Linear Models
+
+Across the three models (anxiety, depression, and stress), there are both shared patterns and clear differences in how predictors relate to outcomes. Financial stress, self-esteem, and loneliness appear consistently important across all models, though their direction and strength vary slightly by outcome. Anxiety is most strongly associated with financial stress, loneliness, sleep, and physical activity, suggesting a strong lifestyle and external pressure component. Depression is more closely tied to sleep, loneliness, financial stress, and self-esteem, highlighting stronger psychosocial influences. Stress is primarily driven by work-related stress and social support, with additional effects from sleep, physical activity, and financial stress, indicating a more occupational focus. Despite these differences, all models show similar RMSE values (approximately 5.7–6.1), indicating only weak to moderate predictive power overall and suggesting that additional variables or more complex modeling approaches may be needed to improve accuracy.
+
+Across all linear models, the residual plots for both the training and test data show a similar overall pattern. In each case, the residuals are centered around a horizontal reference line near zero, indicating that the models are generally unbiased and do not systematically overpredict or underpredict the outcomes. However, the residual points are widely scattered across the plots rather than tightly clustered around zero, suggesting a relatively high level of unexplained variability in the data. This pattern is consistent in both the training and test sets, which indicates that the models generalize in a stable way but still have limited precision. Overall, while the linear models capture the central trend in the data reasonably well, the wide spread of residuals suggests only moderate explanatory power and supports the earlier conclusion of weak to moderate predictive performance.
+
+# Decision Tree for Each
+
+I chose to do a decision tree for each model to determine which variables were the most influential to each outcome.
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggthemes)
+library(rmarkdown)
+
+library(rpart)
+library(rpart.plot)
+library(vip)
+library(pdp)
+
+theme_set(
+  theme_bw() +
+    theme(
+      legend.position = "bottom",
+      strip.background = element_rect(fill = "lightgray"),
+      axis.title.x = element_text(size = rel(1.1)),
+      axis.title.y = element_text(size = rel(1.1))
+    )
+)
+
+scale_colour_discrete <- function(...) scale_color_colorblind(...)
+scale_fill_discrete <- function(...) scale_fill_colorblind(...)
+```
+
+# Anxiety Decision Tree
+
+```{r}
+anxiety_tree <- rpart(
+  Anxiety_Score ~ Age + Gender + Education_Level +
+    Sleep_Hours + Physical_Activity_Hrs +
+    Social_Support_Score + Financial_Stress +
+    Work_Stress + Substance_Use +
+    Self_Esteem_Score + Loneliness_Score,
+  data = dtrain,
+  method = "anova",
+  control = rpart.control(cp = 0.005, minsplit = 20, maxdepth = 4)
+)
+```
+
+```{r}
+rpart.plot(anxiety_tree)
+```
+
+```{r}
+plotcp(anxiety_tree)
+```
+
+# Interpretation
+
+The most important split is frequent substance use. Additional important splits included Age less than 61 and education level. Based on the cp plot, as cp decreases, the size of the tree increases, conveying 8 splits are ideal.
+
+# Depression Decision Tree
+
+```{r}
+depression_tree <- rpart(
+  Depression_Score ~ Age + Gender + Education_Level +
+    Sleep_Hours + Physical_Activity_Hrs +
+    Social_Support_Score + Financial_Stress +
+    Work_Stress + Substance_Use +
+    Self_Esteem_Score + Loneliness_Score,
+  data = dtrain,
+  method = "anova",
+  control = rpart.control(
+    cp = 0.005,
+    minsplit = 20,
+    maxdepth = 4
+  )
+)
+```
+
+```{r}
+rpart.plot(depression_tree)
+```
+
+```{r}
+plotcp(depression_tree)
+```
+
+# Interpretation
+
+The most important split in the depression tree is sleep hours less than or equal to 5.7. Additional important splits are sleep hours greater than or equal to 4.9 and are physical activity levels greater than or equal to 0.35. Based on the cp plot, one can determine that as cp decreases, the size of the tree increases, conveying 8 splits are ideal.
+
+# Stress Decision Tree
+
+```{r}
+library(rpart)
+library(rpart.plot)
+
+stress_tree <- rpart(
+  Stress_Level ~ Age + Gender + Education_Level +
+    Sleep_Hours + Physical_Activity_Hrs +
+    Social_Support_Score + Financial_Stress +
+    Work_Stress + Substance_Use +
+    Self_Esteem_Score + Loneliness_Score,
+  data = dtrain,
+  method = "anova",
+  control = rpart.control(
+    cp = 0.005,
+    minsplit = 20,
+    maxdepth = 4
+  )
+)
+```
+
+```{r}
+rpart.plot(stress_tree)
+```
+
+```{r}
+plotcp(stress_tree)
+```
+
+# Interpretation
+
+The most important split for the stress decision tree is loneliness score greater than or equal to 9. Additional important splits include age greater than or equal to 40 and self-esteem score less than 7. Based on the cp plot, one can assume that as cp decreases, the decision tree size increases and the ideal number of splits is 10.
+
+# Comparisons Across Decision Trees
+
+Across the three decision tree models (anxiety, depression, and stress), different primary predictors emerge, but all models show a combination of behavioral, demographic, and psychosocial factors driving outcomes. The anxiety model is most strongly split by frequent substance use, with additional influence from age and education level, suggesting that anxiety risk is more strongly associated with behavioral risk factors and demographic differences. The depression model is primarily driven by low sleep duration, with additional splits involving sleep consistency and physical activity, indicating that depression is most strongly linked to lifestyle and health behavior patterns. In contrast, the stress model is mainly split by high loneliness scores, followed by age and low self-esteem, highlighting a stronger psychosocial and emotional wellbeing component compared to the other models.
+
+In terms of model structure and complexity, all three CP plots suggest that performance improves as CP decreases and tree size increases, but each model selects a different optimal complexity. The anxiety model suggests an optimal tree with 8 splits, the depression model also selects 8 splits, while the stress model selects a slightly more complex tree with 10 splits, indicating that stress may require more detailed subgrouping to capture variation in the data. Overall, while all three models rely on meaningful but different dominant predictors, they collectively show that mental health outcomes are influenced by distinct combinations of behavioral (anxiety), lifestyle (depression), and psychosocial (stress) factors, with moderate model complexity needed in each case to capture these patterns.
+
+# Unsupervised Learning- Clustering
+
+I utilized clustering in order to discover data structures based on unknown groupings. The clusters were divided into 3 k mean centers.
+
+```{r}
+df_clust <- df |> 
+  select(-Anxiety_Score, -Depression_Score, -Stress_Level)
+df_clust <- df %>%
+  select(
+    Age,
+    Sleep_Hours,
+    Physical_Activity_Hrs,
+    Social_Support_Score,
+    Financial_Stress,
+    Work_Stress,
+    Self_Esteem_Score,
+    Life_Satisfaction_Score,
+    Loneliness_Score
+  )
+df_scaled <- df_clust |> 
+  scale()
+
+dim(df_scaled)
+```
+
+```{r}
+str(df_clust)
+```
+
+```{r}
+df_scaled |> 
+  as_tibble() |> 
+  summarise(across(everything(), list(mean = mean, sd = sd)))
+```
+
+```{r}
+set.seed(320)
+
+km2 <- kmeans(df_scaled, centers = 3)
+```
+
+```{r}
+km2$size
+```
+
+```{r}
+km2$centers
+```
+
+```{r}
+km_centers <- km2$centers |> 
+  as_tibble() |> 
+  t() |> 
+  as.data.frame() |> 
+  mutate(diff = V2 - V1) |> 
+  arrange(-abs(diff))
+
+km_centers
+```
+
+```{r}
+length(km2$cluster)
+```
+
+```{r}
+df_km <- df |> 
+  mutate(cluster = km2$cluster)
+```
+
+```{r}
+df_km |> 
+  group_by(cluster) |> 
+  summarise(
+    n = n(),
+    sleep = mean(Sleep_Hours),
+    Physical_Activity_Hrs = mean(Physical_Activity_Hrs),
+    social_support = mean(Social_Support_Score),
+    self_esteem = mean(Self_Esteem_Score),
+   loneliness = mean(Loneliness_Score),
+    life_satisfaction = mean(Life_Satisfaction_Score),
+    
+    financial_stress = mean(Financial_Stress),
+    work_stress = mean(Work_Stress),
+    .groups = "drop"
+  )
+```
+
+```{r}
+kmeans_result <- kmeans(df_scaled, centers = 3)
+```
+
+```{r}
+df_clust$cluster <- kmeans_result$cluster
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+cluster_means <- df_clust %>%
+  group_by(cluster) %>%
+  summarise(
+    self_esteem = mean(Self_Esteem_Score),
+    loneliness = mean(Loneliness_Score),
+    life_satisfaction = mean(Life_Satisfaction_Score),
+    financial_stress = mean(Financial_Stress),
+    work_stress = mean(Work_Stress),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(-cluster, names_to = "variable", values_to = "value")
+
+ggplot(cluster_means, aes(x = variable, y = value, fill = factor(cluster))) +
+  geom_col(position = "dodge") +
+  coord_flip()
+```
+
+# Interpretation
+
+The clustering results reveal three distinct groups of individuals based on patterns in stress and mental health indicators. Cluster 1 consists of individuals who experience elevated financial stress, while their other mental health measures remain relatively moderate, suggesting that financial strain is their primary concern. Cluster 2 includes individuals who report high work-related stress but still maintain relatively strong psychological wellbeing, indicating resilience despite occupational pressures. In contrast, Cluster 3 represents individuals with lower self-esteem and higher levels of loneliness, suggesting greater overall psychosocial vulnerability and a higher risk for poorer mental health outcomes.
+
+# Discussion
+
+Overall, the results suggest that mental health outcomes (anxiety, depression, and stress) are influenced by a combination of behavioral, lifestyle, and psychosocial factors, but no single model captures these relationships with strong predictive accuracy. Across the linear models, variables such as financial stress, self-esteem, loneliness, sleep, and social support consistently show meaningful relationships with outcomes, although the relatively high and similar RMSE values (around 5.7–6.1) indicate only weak to moderate predictive power. This suggests that while these factors are important, mental health is highly complex and cannot be fully explained by the variables included in the dataset alone.
+
+The decision tree and clustering results add practical insight by identifying specific subgroups and threshold effects within the data. The decision trees highlight that different mental health outcomes are driven by different dominant factors—such as substance use for anxiety, sleep duration for depression, and loneliness for stress—showing that interventions may need to be tailored depending on the outcome of interest. The clustering analysis further reinforces this idea by grouping individuals into meaningful profiles, such as financially stressed individuals, work-stressed but resilient individuals, and socially vulnerable individuals with low self-esteem and high loneliness. Practically, these findings suggest that mental health support strategies should be targeted rather than one-size-fits-all, focusing on the specific drivers relevant to each subgroup.
+
+A key strength of this analysis is the use of multiple modeling approaches (linear regression, decision trees, and clustering), which provides a more comprehensive understanding of the data by capturing both overall trends and subgroup differences. Additionally, the consistency of key variables across methods increases confidence in the importance of factors like financial stress, self-esteem, and loneliness. However, there are limitations. The models show relatively weak predictive performance, indicating that important variables may be missing or that relationships are more complex than linear or tree-based models can capture. Additionally, the analysis is based on a single dataset, which may limit generalizability. Future work could improve predictive power by incorporating additional variables, exploring nonlinear or ensemble methods, and validating results on different populations or time periods.
+
+# Conclusion
+
+This project analyzed anxiety, depression, and stress using linear models, decision trees, and clustering. Key factors such as financial stress, self-esteem, loneliness, sleep, and social support consistently influenced mental health outcomes across methods. However, the relatively high RMSE values suggest only weak to moderate predictive power, indicating that mental health is influenced by complex relationships not fully captured by the models.
+
+The results showed that each outcome has different main drivers: anxiety is more linked to behavioral and demographic factors, depression is strongly influenced by sleep and lifestyle, and stress is mainly associated with psychosocial factors. Clustering also revealed distinct groups with different mental health profiles.
+
+Overall, the project shows that while prediction is limited, the models are useful for identifying meaningful patterns and subgroups. Future work could improve results by adding more variables, using larger datasets, and applying more advanced machine learning methods.
+
+# References
+
+Kaggle 4/20 - <https://www.kaggle.com>
