@@ -173,19 +173,6 @@ The mean values of Anxiety, Depression, and Stress Level can be used as benchmar
 skim(df)
 ```
 
-## Initial Observations
-
-Briefly explain what the descriptive statistics show.
-
-Focus on patterns such as:
-
-- largest or smallest groups,
-- typical values,
-- variation across groups,
-- outliers or unusual cases,
-- missing data issues, and
-- patterns that set up your main story.
-
 # Data Visualization and Storytelling
 
 ## Visualization 1: Overall Distribution
@@ -290,7 +277,7 @@ Other Gender had greatest Depression and Stress Level Scores, possibly due to so
 ```{=html}
 <div style="display: flex; justify-content: center; margin: 1em 0;">
   <iframe
-    src="YOUR_SHINY_APP_URL"
+    src="https://019e2833-abd9-ed47-281e-5a14ea53109a.share.connect.posit.cloud/"
     width="800"
     height="800"
     frameborder="0"
