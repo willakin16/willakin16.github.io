@@ -8,10 +8,12 @@ website:
     # background: "#1c4982"
     pinned: true
     left:
-      - text: Project
+      - text: 210 Project
         href: Danl_210_Project2.ipynb
       - text: Blog
         href: blog-listing.qmd
+      - text: Dashboard
+        href: DANL310_Dashboard.qmd
       - text: Python Data Analysis
         menu:
         - text: Pandas Basics
