@@ -356,6 +356,8 @@ If this project were expanded further, I would explore additional variables that
 
 I would also be interested in analyzing data across a longer time period to examine how mental health trends change over time or in response to major events such as economic shifts or public health crises. In future work, predictive modeling techniques could also be explored to identify which combinations of factors are most strongly associated with mental health outcomes while still recognizing that correlation does not necessarily imply causation.
 
+# Project Write Up
+
 # References
 
 Kaggle 4/20 - https://www.kaggle.com

@@ -1,0 +1,132 @@
+---
+title: "DANL 310 Mental Health Analysis Dashboard"
+format: dashboard
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+df <- read_csv("/Users/willakin/Documents/DANL 310/DANL 310/DANL 310/anxiety_depression_data.csv")
+```
+
+```{r}
+library(tidyverse)
+df <- df %>%
+  mutate(
+    Gender = as.factor(Gender),
+    Education_Level = as.factor(Education_Level),
+    Employment_Status = as.factor(Employment_Status),
+    Family_History_Mental_Illness = as.factor(Family_History_Mental_Illness),
+    Chronic_Illnesses = as.factor(Chronic_Illnesses),
+    Medication_Use = as.factor(Medication_Use),
+    Therapy = as.factor(Therapy),
+    Meditation = as.factor(Meditation),
+    Substance_Use = as.factor(Substance_Use)
+  ) 
+```
+
+```{r}
+  df <- df %>%
+  mutate(
+    Age_Group = case_when(
+      Age < 18 ~ "Under 18",
+      Age >= 18 & Age <= 24 ~ "18–24",
+      Age >= 25 & Age <= 34 ~ "25–34",
+      Age >= 35 & Age <= 44 ~ "35–44",
+      Age >= 45 & Age <= 54 ~ "45–54",
+      Age >= 55 ~ "55+"
+    )
+  ) 
+```
+
+```{r}
+  df_long <- df %>%
+  pivot_longer(
+    cols = c(Anxiety_Score, Depression_Score, Stress_Level),
+    names_to = "Outcome",
+    values_to = "Score"
+  )
+```
+
+## Mental Health Dashboard
+
+## Row 1
+
+```{r}
+#| title: Distribution of Mental Health Measures
+
+library(tidyverse)
+library(viridis)
+
+ggplot(df_long, aes(x = Score, fill = after_stat(count))) +
+  geom_histogram(bins = 15, color = "white") +
+  facet_wrap(~ Outcome, scales = "free_x") +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Mental Health Measures",
+    x = "Score",
+    y = "Count",
+    fill = "Frequency"
+  )
+```
+
+```{r}
+#| title: Mental Health Scores by Education Level
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+
+ggplot(df_long, aes(x = Education_Level, y = Score, fill = Education_Level)) +
+  geom_boxplot() +
+  facet_wrap(~ Outcome) +
+  scale_fill_viridis_d()+
+  theme_minimal() +
+  labs(
+    title = "Mental Health Scores by Education Level",
+    x = "Education Level",
+    y = "Score"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Row 2
+
+```{r}
+#| title: "Average Mental Health Outcomes by Age Group"
+library(tidyverse)
+library(viridis)
+
+df_long_summary <- df_long %>%
+  group_by(Age_Group, Outcome) %>%
+  summarise(mean_score = mean(Score, na.rm = TRUE), .groups = "drop")
+
+ggplot(df_long_summary, aes(x = Age_Group, y = mean_score, fill = Age_Group)) +
+  geom_col() +
+  scale_fill_viridis_d() +
+  facet_wrap(~Outcome, scales = "free_y") +
+  labs(
+    title = "Average Mental Health Outcomes by Age Group",
+    x = "Age Group",
+    y = "Mean Score"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+```
+
+```{r}
+#| title: "Mental Health Scores by Gender"
+ggplot(df_long, aes(x = Gender, y = Score, fill = Gender)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ Outcome) +
+  scale_fill_viridis_d() +
+  theme_minimal() +
+  labs(
+    title = "Mental Health Scores by Gender",
+    x = "Gender",
+    y = "Score"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+```

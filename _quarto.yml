@@ -14,6 +14,8 @@ website:
         href: blog-listing.qmd
       - text: Dashboard
         href: DANL310_Dashboard.qmd
+      - text: Mental Health Write-Up
+        href: DANL310_WriteUp.qmd
       - text: Python Data Analysis
         menu:
         - text: Pandas Basics
