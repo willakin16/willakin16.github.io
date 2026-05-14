@@ -1,0 +1,469 @@
+---
+title: "DANL 310 Mental Health Analysis Project"
+subtitle: "DANL 310: Data Visualization and Presentation"
+author:
+  - name: Will Akin
+    affiliation: SUNY Geneseo
+date: last-modified
+
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+  fig-width: 9
+  fig-height: 6
+
+format:
+  html:
+    toc: true
+    toc-title: "Contents"
+    toc-depth: 4
+    toc-expand: 3
+    number-sections: false
+    code-fold: false
+    code-tools: true
+    highlight-style: atom-one
+---
+
+```{r setup}
+#| include: false
+library(tidyverse)
+library(skimr)
+library(hrbrthemes)
+library(rmarkdown)
+
+# Add other packages as needed.
+# Examples:
+# library(lubridate)
+# library(janitor)
+# library(scales)
+# library(viridis)
+# library(plotly)
+# library(DT)
+# library(sf)
+
+# Feel free to revise this theme.
+theme_set(
+  theme_ipsum() +
+    theme(
+      strip.background = element_rect(fill = "lightgray"),
+      axis.title.x = element_text(size = rel(1.33)),
+      axis.title.y = element_text(size = rel(1.33))
+    )
+)
+
+# Optional color-blind-friendly scales.
+# scale_colour_discrete <- function(...) scale_colour_viridis_d(...)
+# scale_fill_discrete <- function(...) scale_fill_viridis_d(...)
+```
+
+# Project Overview
+
+- **Project Webpage:** [Insert link here](YOUR_PROJECT_URL)
+
+Write a short overview of your data storytelling project.
+
+Your project should tell an interesting and coherent story using:
+
+- descriptive statistics,
+- data transformation, and
+- data visualization.
+
+A literature review, regression model, machine learning model, or formal statistical model is **not required**.
+
+
+# Big Idea
+
+State the main message of your project in 2--3 sentences.
+
+As a data analytics and sociomedical science major, I am interested in studying public health datasets to better understand mental health trends and the factors associated with disorders such as anxiety and depression. This topic is especially important because mental health disorders affect millions of people and can significantly impact overall well-being and quality of life. By analyzing these patterns and trends, public health professionals, healthcare providers, policymakers, and researchers can develop more effective prevention strategies, interventions, and support systems for affected individuals and communities.
+
+# Guiding Question or Story Theme
+
+How can public health data analysis help identify the social, behavioral, and demographic factors that contribute to mental health disorders such as anxiety and depression?
+
+# Background and Context
+
+Mental health data is important because it allows researchers to identify social, behavioral, and demographic variables that may increase a person’s risk for mental health conditions.
+
+# Data
+
+```{r data-import}
+library(tidyverse)
+df <- read_csv("/Users/willakin/Documents/DANL 310/DANL 310/DANL 310/anxiety_depression_data.csv")
+```
+
+## Key Variables
+
+```{r}
+colnames(df)
+```
+```{r}
+library(skimr)
+skim(df)
+```
+```{r}
+summary(df)
+```
+
+
+## Unit of Observation
+
+Each row in the dataset represents one individual participant and their demographic, lifestyle, social, and mental health information. The variables include characteristics such as age, gender, education level, employment status, sleep hours, physical activity, stress levels, social support, and mental health measures including anxiety and depression scores. Together, each row provides a profile of a person that can be analyzed to identify patterns and factors associated with mental health outcomes.
+
+## Data Source
+
+The data set I used is called Anxiety and Depression Mental Health Factors. I retrieved this data from Kaggle. I accessed this data on April 10th. This dataset contains related to anxiety, depression, and mental health influences. It includes demographic details, lifestyle habits, mental health indicators, medical history, coping mechanisms, and stress factors. The dataset is designed for mental health analysis, predictive modeling, and research on the impact of various factors on mental well-being. The link is https://www.kaggle.com/datasets/ak0212/anxiety-and-depression-mental-health-factors
+
+# Data Preparation and Transformation
+
+First I refactored the data variables. Then I created Age group variables that divided the age variables into different age ranges for better analysis. I also reshaped the data frame to Outcome and Score for a better analysis on how the variables of Score impact the variables of Outcome.
+
+
+```{r data-preparation}
+df <- df %>%
+  mutate(
+    Gender = as.factor(Gender),
+    Education_Level = as.factor(Education_Level),
+    Employment_Status = as.factor(Employment_Status),
+    Family_History_Mental_Illness = as.factor(Family_History_Mental_Illness),
+    Chronic_Illnesses = as.factor(Chronic_Illnesses),
+    Medication_Use = as.factor(Medication_Use),
+    Therapy = as.factor(Therapy),
+    Meditation = as.factor(Meditation),
+    Substance_Use = as.factor(Substance_Use)
+  )
+```
+
+```{r}
+df <- df %>%
+  mutate(
+    Age_Group = case_when(
+      Age < 18 ~ "Under 18",
+      Age >= 18 & Age <= 24 ~ "18–24",
+      Age >= 25 & Age <= 34 ~ "25–34",
+      Age >= 35 & Age <= 44 ~ "35–44",
+      Age >= 45 & Age <= 54 ~ "45–54",
+      Age >= 55 ~ "55+"
+    )
+  )
+
+```
+
+
+```{r}
+
+df_long <- df %>%
+  pivot_longer(
+    cols = c(Anxiety_Score, Depression_Score, Stress_Level),
+    names_to = "Outcome",
+    values_to = "Score"
+  )
+
+```
+
+
+# Descriptive Statistics
+
+```{r}
+library(tidyverse)
+
+summary_table <- df %>%
+  summarise(
+    Anxiety_Mean = mean(Anxiety_Score, na.rm = TRUE),
+    Anxiety_SD = sd(Anxiety_Score, na.rm = TRUE),
+
+    Depression_Mean = mean(Depression_Score, na.rm = TRUE),
+    Depression_SD = sd(Depression_Score, na.rm = TRUE),
+
+    Stress_Mean = mean(Stress_Level, na.rm = TRUE),
+    Stress_SD = sd(Stress_Level, na.rm = TRUE)
+  )
+summary_table
+```
+The mean values of Anxiety, Depression, and Stress Level can be used as benchmarks when comparing the levels across different variables.
+
+## Basic Summary
+
+```{r summary-statistics}
+skim(df)
+```
+
+## Initial Observations
+
+Briefly explain what the descriptive statistics show.
+
+Focus on patterns such as:
+
+- largest or smallest groups,
+- typical values,
+- variation across groups,
+- outliers or unusual cases,
+- missing data issues, and
+- patterns that set up your main story.
+
+# Data Visualization and Storytelling
+
+This section is the main body of your project. Use visualizations to build a clear story.
+
+Each visualization should include:
+
+- a clear, message-driven title,
+- readable axis labels,
+- appropriate chart type,
+- thoughtful color choices,
+- colorblind-friendly colors,
+- a source note or caption when appropriate, and
+- a short written interpretation.
+
+Your webpage should feel like one coherent narrative, not a disconnected collection of plots.
+
+## Visualization 1: Main Pattern
+
+```{r visualization-1}
+# Replace this example with your own visualization.
+
+library(tidyverse)
+library(viridis)
+
+ggplot(df_long, aes(x = Score, fill = after_stat(count))) +
+  geom_histogram(bins = 15, color = "white") +
+  facet_wrap(~ Outcome, scales = "free_x") +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Mental Health Measures",
+    x = "Score",
+    y = "Count",
+    fill = "Frequency"
+  )
+
+#   labs(
+#     title = "Write a clear, message-driven title",
+#     subtitle = "Optional subtitle that provides context",
+#     x = "X-axis label",
+#     y = "Y-axis label",
+#     caption = "Source: Your data source"
+#   )
+```
+
+**Interpretation:**  
+Explain what this visualization shows. What should the audience notice first? How does this figure begin the story?
+
+## Visualization 2: Comparison or Contrast
+
+```{r visualization-2}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+
+ggplot(df_long, aes(x = Education_Level, y = Score, fill = Education_Level)) +
+  geom_boxplot() +
+  facet_wrap(~ Outcome) +
+  scale_fill_viridis_d()+
+  theme_minimal() +
+  labs(
+    title = "Mental Health Scores by Education Level",
+    x = "Education Level",
+    y = "Score"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+**Interpretation:**  
+Interpretation: Mean Stress Level has little differentiation per education level.
+The Master’s education Level had a  low mean anxiety score, but a high depression score. 
+
+
+## Visualization 3: Trend, Relationship, or Deeper Pattern
+
+```{r visualization-3}
+library(tidyverse)
+library(viridis)
+
+df_long_summary <- df_long %>%
+  group_by(Age_Group, Outcome) %>%
+  summarise(mean_score = mean(Score, na.rm = TRUE), .groups = "drop")
+
+ggplot(df_long_summary, aes(x = Age_Group, y = mean_score, fill = Age_Group)) +
+  geom_col() +
+  scale_fill_viridis_d() +
+  facet_wrap(~Outcome, scales = "free_y") +
+  labs(
+    title = "Average Mental Health Outcomes by Age Group",
+    x = "Age Group",
+    y = "Mean Score"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+```
+
+**Interpretation:**  
+Interpretation: 18-24 year olds had the greatest anxiety and depression score, possibly due to school. 35-44 year olds had the greatest stress levels.
+
+## Optional Visualization 4: Additional Evidence 1
+
+```{r visualization-4}
+ggplot(df_long, aes(x = Gender, y = Score, fill = Gender)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ Outcome) +
+  scale_fill_viridis_d() +
+  theme_minimal() +
+  labs(
+    title = "Mental Health Scores by Gender",
+    x = "Gender",
+    y = "Score"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+```
+
+**Interpretation:**  
+Other Gender had greatest Depression and Stress Level Scores, possibly due to social stigma.
+
+
+## Shiny App
+
+```{=html}
+<div style="display: flex; justify-content: center; margin: 1em 0;">
+  <iframe
+    src="YOUR_SHINY_APP_URL"
+    width="800"
+    height="800"
+    frameborder="0"
+    style="border: none;"
+  ></iframe>
+</div>
+```
+
+Briefly describe the Shiny app and dashboard that accompany this project.
+
+
+## Dashboard
+
+- **Dashboard:** [Insert link here](YOUR_DASHBOARD_URL)
+
+Explain how dashboard help users interact with or explore the project data.
+
+
+
+
+# Connecting the Dots
+
+Bring the visual evidence together.
+
+Explain how your descriptive statistics, transformations, and visualizations work together to answer your guiding question or support your story theme.
+
+You may discuss:
+
+- the strongest pattern in the data,
+- a surprising result,
+- differences across groups,
+- changes over time,
+- geographic or categorical variation,
+- practical, business, economic, social, cultural, or policy relevance,
+- why your audience should care.
+
+# Discussion
+
+Interpret the meaning of your findings in plain language.
+
+This project does **not** require regression, machine learning, or causal inference. Avoid claiming that one variable causes another unless your project design truly supports that claim.
+
+Use careful language such as:
+
+- The data suggest that...
+- The pattern is consistent with...
+- One possible explanation is...
+- This comparison shows that...
+- This trend raises questions about...
+
+## Limitations
+
+Discuss what your data story can and cannot show.
+
+Possible limitations include:
+
+- missing data,
+- limited time period,
+- measurement issues,
+- small sample size,
+- data not representing all populations,
+- descriptive analysis cannot prove causality.
+
+# Conclusion
+
+Summarize your project in one or two paragraphs.
+
+Return to your Big Idea and explain the main takeaway your audience should remember.
+
+A strong conclusion should answer:
+
+- What did the data reveal?
+- Why does it matter?
+- What should the audience remember after leaving your webpage?
+
+# Future Directions
+
+Briefly explain what you would explore next.
+
+Examples:
+
+- additional variables,
+- a longer time period,
+- different geographic areas,
+- more detailed group comparisons,
+- a dashboard or interactive visualization improvement,
+- a follow-up analysis using modeling, if appropriate.
+
+# References
+
+List all sources used in your project.
+
+Include:
+
+- data sources,
+- websites,
+- reports,
+- articles,
+- R packages or tools, if relevant.
+
+For online sources, include the full URL and date accessed.
+
+# Appendix
+
+Use the appendix for extra materials that are useful but not central to the story.
+
+Examples:
+
+- additional tables,
+- additional figures,
+- extra data cleaning details,
+- code that is too long for the main narrative.
+
+```{r appendix-code}
+# Optional extra code.
+```
+
+# Project Checklist
+
+Before submitting, check that your project includes the following:
+
+- [ ] A clear Big Idea or main message.
+- [ ] A clear guiding question or story theme.
+- [ ] A description of the data source and unit of observation.
+- [ ] Data transformation code and explanation.
+- [ ] Descriptive statistics that help set up the story.
+- [ ] Clear and readable visualizations.
+- [ ] Written interpretation after each major figure.
+- [ ] A coherent narrative connecting the figures together.
+- [ ] A conclusion explaining why the story matters.
+- [ ] A published project webpage on each member's personal GitHub website.
+- [ ] A published Shiny app using the project data.
+- [ ] A published dashboard using the project data.
+- [ ] No unnecessary regression, machine learning, or formal modeling section.
+- [ ] No major code errors, warnings, or redundant output.
