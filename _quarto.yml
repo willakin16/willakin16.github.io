@@ -12,6 +12,8 @@ website:
         href: Danl_210_Project2.ipynb
       - text: Blog
         href: blog-listing.qmd
+      - text: 310 Project
+        href: danl-310-data-storytelling-project.qmd
       - text: Dashboard
         href: DANL310_Dashboard.qmd
       - text: Mental Health Write-Up
