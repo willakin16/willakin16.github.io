@@ -795,7 +795,7 @@
     "href": "danl-310-data-storytelling-project.html#visualization-1-main-pattern",
     "title": "DANL 310 Mental Health Analysis Project",
     "section": "Visualization 1: Main Pattern",
-    "text": "Visualization 1: Main Pattern\n\n# Replace this example with your own visualization.\n\nlibrary(tidyverse)\nlibrary(viridis)\n\nggplot(df_long, aes(x = Score, fill = after_stat(count))) +\n  geom_histogram(bins = 15, color = \"white\") +\n  facet_wrap(~ Outcome, scales = \"free_x\") +\n  scale_fill_viridis_c() +\n  theme_minimal() +\n  labs(\n    title = \"Distribution of Mental Health Measures\",\n    x = \"Score\",\n    y = \"Count\",\n    fill = \"Frequency\"\n  )\n\n\n\n\n\n\n\n#   labs(\n#     title = \"Write a clear, message-driven title\",\n#     subtitle = \"Optional subtitle that provides context\",\n#     x = \"X-axis label\",\n#     y = \"Y-axis label\",\n#     caption = \"Source: Your data source\"\n#   )\n\nInterpretation:\nExplain what this visualization shows. What should the audience notice first? How does this figure begin the story?"
+    "text": "Visualization 1: Main Pattern\n\nlibrary(tidyverse)\nlibrary(viridis)\n\nggplot(df_long, aes(x = Score, fill = after_stat(count))) +\n  geom_histogram(bins = 15, color = \"white\") +\n  facet_wrap(~ Outcome, scales = \"free_x\") +\n  scale_fill_viridis_c() +\n  theme_minimal() +\n  labs(\n    title = \"Distribution of Mental Health Measures\",\n    x = \"Score\",\n    y = \"Count\",\n    fill = \"Frequency\"\n  )\n\n\n\n\n\n\n\n\nInterpretation:\nExplain what this visualization shows. What should the audience notice first? How does this figure begin the story?"
   },
   {
     "objectID": "danl-310-data-storytelling-project.html#visualization-2-comparison-or-contrast",
@@ -816,7 +816,7 @@
     "href": "danl-310-data-storytelling-project.html#optional-visualization-4-additional-evidence-1",
     "title": "DANL 310 Mental Health Analysis Project",
     "section": "Optional Visualization 4: Additional Evidence 1",
-    "text": "Optional Visualization 4: Additional Evidence 1\n\nggplot(df_long, aes(x = Gender, y = Score, fill = Gender)) +\n  geom_boxplot(alpha = 0.7) +\n  facet_wrap(~ Outcome) +\n  scale_fill_viridis_d() +\n  theme_minimal() +\n  labs(\n    title = \"Mental Health Scores by Gender\",\n    x = \"Gender\",\n    y = \"Score\"\n  ) +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1),\n        legend.position = \"none\")\n\n\n\n\n\n\n\n\nInterpretation:\nOther Gender had greatest Depression and Stress Level Scores, possibly due to social stigma,"
+    "text": "Optional Visualization 4: Additional Evidence 1\n\nggplot(df_long, aes(x = Gender, y = Score, fill = Gender)) +\n  geom_boxplot(alpha = 0.7) +\n  facet_wrap(~ Outcome) +\n  scale_fill_viridis_d() +\n  theme_minimal() +\n  labs(\n    title = \"Mental Health Scores by Gender\",\n    x = \"Gender\",\n    y = \"Score\"\n  ) +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1),\n        legend.position = \"none\")\n\n\n\n\n\n\n\n\nInterpretation:\nOther Gender had greatest Depression and Stress Level Scores, possibly due to social stigma."
   },
   {
     "objectID": "danl-310-data-storytelling-project.html#optional-visualization-5-additional-evidence-2",

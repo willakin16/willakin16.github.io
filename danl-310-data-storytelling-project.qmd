@@ -222,8 +222,6 @@ Your webpage should feel like one coherent narrative, not a disconnected collect
 ## Visualization 1: Main Pattern
 
 ```{r visualization-1}
-# Replace this example with your own visualization.
-
 library(tidyverse)
 library(viridis)
 
@@ -238,14 +236,6 @@ ggplot(df_long, aes(x = Score, fill = after_stat(count))) +
     y = "Count",
     fill = "Frequency"
   )
-
-#   labs(
-#     title = "Write a clear, message-driven title",
-#     subtitle = "Optional subtitle that provides context",
-#     x = "X-axis label",
-#     y = "Y-axis label",
-#     caption = "Source: Your data source"
-#   )
 ```
 
 **Interpretation:**  
@@ -345,7 +335,7 @@ Briefly describe the Shiny app and dashboard that accompany this project.
 
 ## Dashboard
 
-- **Dashboard:** [Insert link here](YOUR_DASHBOARD_URL)
+- **Dashboard:** [Insert link here](file:///Users/willakin/Documents/willakin16.github.io/DANL310_Dashboard.html)
 
 Explain how dashboard help users interact with or explore the project data.
 
