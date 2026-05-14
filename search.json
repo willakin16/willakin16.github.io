@@ -25,7 +25,7 @@
     "href": "danl-310-data-storytelling-project.html#data-source",
     "title": "DANL 310 Mental Health Analysis Project",
     "section": "Data Source",
-    "text": "Data Source\nThe data set I used is called Anxiety and Depression Mental Health Factors. I retrieved this data from Kaggle. I accessed this data on April 10th. This dataset contains related to anxiety, depression, and mental health influences. It includes demographic details, lifestyle habits, mental health indicators, medical history, coping mechanisms, and stress factors. The dataset is designed for mental health analysis, predictive modeling, and research on the impact of various factors on mental well-being. The link is https://www.kaggle.com/datasets/ak0212/anxiety-and-depression-mental-health-factors"
+    "text": "Data Source\nThe data set I used is called Anxiety and Depression Mental Health Factors. I retrieved this data from Kaggle. I accessed this data on April 20th. This dataset contains related to anxiety, depression, and mental health influences. It includes demographic details, lifestyle habits, mental health indicators, medical history, coping mechanisms, and stress factors. The dataset is designed for mental health analysis, predictive modeling, and research on the impact of various factors on mental well-being. The link is https://www.kaggle.com/datasets/ak0212/anxiety-and-depression-mental-health-factors"
   },
   {
     "objectID": "danl-310-data-storytelling-project.html#basic-summary",
@@ -74,21 +74,21 @@
     "href": "danl-310-data-storytelling-project.html#shiny-app",
     "title": "DANL 310 Mental Health Analysis Project",
     "section": "Shiny App",
-    "text": "Shiny App\n\n  \n\nBriefly describe the Shiny app and dashboard that accompany this project."
+    "text": "Shiny App"
   },
   {
     "objectID": "danl-310-data-storytelling-project.html#dashboard",
     "href": "danl-310-data-storytelling-project.html#dashboard",
     "title": "DANL 310 Mental Health Analysis Project",
     "section": "Dashboard",
-    "text": "Dashboard\n\nDashboard: Insert link here\n\nExplain how dashboard help users interact with or explore the project data."
+    "text": "Dashboard\n\nDashboard: Insert link here\n\nThis dashboard clearly conveys the visualizations in a cleaner matter, where all graphs can be crossed-analyzed."
   },
   {
     "objectID": "danl-310-data-storytelling-project.html#limitations",
     "href": "danl-310-data-storytelling-project.html#limitations",
     "title": "DANL 310 Mental Health Analysis Project",
     "section": "Limitations",
-    "text": "Limitations\nDiscuss what your data story can and cannot show.\nPossible limitations include:\n\nmissing data,\nlimited time period,\nmeasurement issues,\nsmall sample size,\ndata not representing all populations,\ndescriptive analysis cannot prove causality."
+    "text": "Limitations\nAlthough this project provides useful insight into mental health patterns, there are several limitations that should be considered when interpreting the findings.\nFirst, the dataset may not fully represent all populations. Because the data came from a Kaggle dataset rather than a nationally representative survey, the participants may not reflect the experiences of all demographic groups, geographic regions, or socioeconomic backgrounds. This means the findings may not generalize to the broader population.\nAnother limitation is that the analysis is descriptive rather than causal. The visualizations and summary statistics can identify patterns and associations between variables, but they cannot prove that one factor directly causes anxiety, depression, or stress.\nThe dataset may also contain measurement limitations. Mental health variables such as anxiety, depression, and stress are often based on self-reported responses, which can be influenced by personal interpretation, honesty, or differences in how participants understand survey questions. This means the scores may not perfectly capture an individual’s true mental health condition.\nIn addition, some potentially important variables that also influence anxiety depression, and stress level may be missing from the dataset."
   },
   {
     "objectID": "danl_proj_nba_files/danl_proj_nba.html#salary-distribution-among-teams",

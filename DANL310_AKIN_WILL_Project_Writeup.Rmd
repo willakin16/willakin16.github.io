@@ -1,0 +1,63 @@
+---
+title: "DANL310 Mental Health Analysis Project Write Up"
+output: html_document
+date: "2026-05-14"
+---
+
+## DANL310 Mental Health Analysis Project Write Up
+
+# Introduction and Big Idea
+Mental health disorders such as anxiety and depression affect millions of people and can significantly impact overall well-being, relationships, education, and quality of life. As a data analytics and sociomedical science major, I was interested in exploring how demographic, social, and behavioral factors may be associated with mental health outcomes. This project used public health data analysis to identify patterns related to anxiety, depression, and stress among different groups of individuals.
+
+The main idea of this project is that mental health outcomes are influenced by a combination of interconnected factors rather than a single cause. By analyzing patterns in public health data, researchers and healthcare professionals can better understand which groups may experience higher levels of mental health challenges and use that information to support prevention and intervention efforts.
+
+# Guiding Question
+
+How can public health data analysis help identify the social, behavioral, and demographic factors that contribute to mental health disorders such as anxiety and depression?
+
+# Unit of Observation
+
+Each row in the dataset represents one individual participant and their demographic, lifestyle, social, and mental health information. Variables include age, gender, education level, employment status, sleep hours, physical activity, social support, stress levels, anxiety scores, and depression scores. Together, these variables create a profile that can be analyzed to identify patterns associated with mental health outcomes.
+
+# Data Source
+
+The dataset used in this project is called Anxiety and Depression Mental Health Factors from Kaggle. The dataset was accessed on April 20, 2026. It contains information related to anxiety, depression, lifestyle habits, demographic characteristics, medical history, coping mechanisms, and stress factors. The dataset was designed for mental health analysis and research on the impact of different factors on mental well-being.
+
+# Data Preparation and Transformation
+Several steps were completed to prepare the data for analysis. First, categorical variables such as gender, education level, employment status, therapy participation, and substance use were converted into factors to improve analysis and visualization. Next, an Age_Group variable was created to divide participants into meaningful age ranges. Finally, the dataset was reshaped into a long format using pivot_longer() so anxiety, depression, and stress scores could be compared more efficiently across groups and visualizations.
+
+# Descriptive Statistics
+
+Descriptive statistics were calculated for anxiety, depression, and stress scores, including means and standard deviations. These statistics provided a summary of the overall distribution and variability of mental health outcomes within the dataset and helped support patterns shown in the visualizations.
+
+# Findings and Interpretation
+
+The analysis revealed several important patterns related to mental health outcomes. One of the strongest findings was that participants ages 18–24 had the highest average anxiety and depression scores. The data suggest that younger adults may experience higher levels of emotional distress during major life transitions such as college, entering the workforce, or financial uncertainty.
+
+The analysis also showed that participants ages 35–44 had the highest stress levels. One possible explanation is that adults in this age range may experience increased pressure related to careers, finances, and family responsibilities. While the data cannot prove causation, the pattern is consistent with common stressors experienced during middle adulthood.
+
+Gender differences were also observed in the dataset. Participants categorized as “Other” showed higher average depression and stress scores than other gender groups. This comparison suggests that gender minority groups may experience additional emotional or social challenges. One possible explanation is the impact of discrimination, stigma, or reduced access to support resources.
+
+The analysis of education levels showed relatively small differences in stress scores across groups, although some variation appeared in anxiety and depression scores. For example, participants with Master’s degrees showed lower average anxiety scores but somewhat higher depression scores. This trend raises questions about how educational expectations, career pressure, or work-life balance may influence mental health differently across groups.
+
+# Connecting the Findings
+The descriptive statistics, data transformations, and visualizations worked together to answer the guiding question by identifying relationships between demographic characteristics and mental health outcomes. The transformations improved the organization of the data and allowed for clearer comparisons between anxiety, depression, and stress measures. The visualizations then helped highlight differences across age groups, gender categories, and education levels.
+
+Overall, the findings suggest that mental health outcomes vary across demographic and social groups and may be associated with factors such as age, gender identity, education, and lifestyle characteristics. These findings are important because they help identify groups that may benefit from additional mental health support and public health resources.
+
+# Limitations
+Although the project identified meaningful patterns, there are several limitations to consider. The dataset may not fully represent all populations because it was collected from a Kaggle source rather than a nationally representative survey. In addition, the analysis was descriptive and cannot establish causal relationships between variables.
+
+The mental health measures were also based on self-reported data, which may contain reporting bias or differences in interpretation among participants. Some important variables, such as income, healthcare access, or geographic location, may not have been included in the dataset. Finally, the dataset represented a single snapshot in time, so the project could not examine how mental health changes over longer periods.
+
+# Conclusion
+
+This project demonstrated how public health data analysis can be used to better understand patterns associated with anxiety, depression, and stress. The data revealed important differences across age groups, gender identities, and education levels, suggesting that mental health outcomes are connected to a variety of demographic and social factors.
+
+These findings matter because mental health disorders continue to affect millions of individuals and communities. While the analysis does not prove causation, it highlights patterns that may help public health professionals, researchers, and policymakers identify groups that could benefit from additional support and mental health resources. 
+The main takeaway from this project is that data analysis can play an important role in understanding mental health trends, raising awareness, and supporting future research and intervention efforts.
+
+# Future Directions
+
+If this project were expanded further, future analysis could include additional variables such as income, access to healthcare, relationship status, or geographic location. Examining data across a longer time period could also provide insight into how mental health trends change over time or during major public health or economic events.
+Future research could also explore predictive modeling techniques to better understand which combinations of factors are most strongly associated with mental health outcomes while recognizing that correlation does not necessarily imply causation.
