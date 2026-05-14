@@ -273,13 +273,6 @@
     "text": "Basic Summary\n\nskim(df)\n\n\nData summary\n\n\nName\ndf\n\n\nNumber of rows\n1200\n\n\nNumber of columns\n22\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\ncharacter\n1\n\n\nfactor\n9\n\n\nnumeric\n12\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: character\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmin\nmax\nempty\nn_unique\nwhitespace\n\n\n\n\nAge_Group\n0\n1\n3\n5\n0\n5\n0\n\n\n\nVariable type: factor\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nordered\nn_unique\ntop_counts\n\n\n\n\nGender\n0\n1\nFALSE\n4\nFem: 569, Mal: 520, Non: 90, Oth: 21\n\n\nEducation_Level\n0\n1\nFALSE\n5\nPhD: 262, Hig: 242, Mas: 242, Oth: 240\n\n\nEmployment_Status\n0\n1\nFALSE\n4\nEmp: 320, Stu: 310, Une: 288, Ret: 282\n\n\nFamily_History_Mental_Illness\n0\n1\nFALSE\n2\n0: 818, 1: 382\n\n\nChronic_Illnesses\n0\n1\nFALSE\n2\n0: 879, 1: 321\n\n\nMedication_Use\n0\n1\nFALSE\n3\nNon: 747, Reg: 238, Occ: 215\n\n\nTherapy\n0\n1\nFALSE\n2\n0: 948, 1: 252\n\n\nMeditation\n0\n1\nFALSE\n2\n0: 721, 1: 479\n\n\nSubstance_Use\n0\n1\nFALSE\n3\nNon: 834, Occ: 242, Fre: 124\n\n\n\nVariable type: numeric\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmean\nsd\np0\np25\np50\np75\np100\nhist\n\n\n\n\nAge\n0\n1\n46.32\n16.45\n18\n33.0\n46.0\n61.0\n74.0\n▇▆▇▇▇\n\n\nSleep_Hours\n0\n1\n6.47\n1.53\n2\n5.4\n6.4\n7.5\n12.4\n▁▆▇▂▁\n\n\nPhysical_Activity_Hrs\n0\n1\n2.01\n2.04\n0\n0.6\n1.4\n2.7\n15.1\n▇▂▁▁▁\n\n\nSocial_Support_Score\n0\n1\n5.06\n2.65\n1\n3.0\n5.0\n7.0\n9.0\n▇▇▃▇▇\n\n\nAnxiety_Score\n0\n1\n10.47\n5.91\n1\n5.0\n10.5\n16.0\n20.0\n▇▆▇▇▇\n\n\nDepression_Score\n0\n1\n10.67\n5.63\n1\n6.0\n11.0\n15.0\n20.0\n▆▇▇▇▇\n\n\nStress_Level\n0\n1\n5.00\n2.54\n1\n3.0\n5.0\n7.0\n9.0\n▇▇▅▇▇\n\n\nFinancial_Stress\n0\n1\n4.99\n2.59\n1\n3.0\n5.0\n7.0\n9.0\n▇▇▅▇▇\n\n\nWork_Stress\n0\n1\n4.89\n2.55\n1\n3.0\n5.0\n7.0\n9.0\n▇▇▃▇▇\n\n\nSelf_Esteem_Score\n0\n1\n5.06\n2.53\n1\n3.0\n5.0\n7.0\n9.0\n▇▇▃▇▇\n\n\nLife_Satisfaction_Score\n0\n1\n5.12\n2.57\n1\n3.0\n5.0\n7.0\n9.0\n▇▇▅▇▇\n\n\nLoneliness_Score\n0\n1\n4.96\n2.57\n1\n3.0\n5.0\n7.0\n9.0\n▇▇▅▇▇"
   },
   {
-    "objectID": "danl-310-data-storytelling-project.html#initial-observations",
-    "href": "danl-310-data-storytelling-project.html#initial-observations",
-    "title": "DANL 310 Mental Health Analysis Project",
-    "section": "Initial Observations",
-    "text": "Initial Observations\nBriefly explain what the descriptive statistics show.\nFocus on patterns such as:\n\nlargest or smallest groups,\ntypical values,\nvariation across groups,\noutliers or unusual cases,\nmissing data issues, and\npatterns that set up your main story."
-  },
-  {
     "objectID": "danl-310-data-storytelling-project.html#visualization-1-overall-distribution",
     "href": "danl-310-data-storytelling-project.html#visualization-1-overall-distribution",
     "title": "DANL 310 Mental Health Analysis Project",
@@ -327,19 +320,5 @@
     "title": "DANL 310 Mental Health Analysis Project",
     "section": "Limitations",
     "text": "Limitations\nAlthough this project provides useful insight into mental health patterns, there are several limitations that should be considered when interpreting the findings.\nFirst, the dataset may not fully represent all populations. Because the data came from a Kaggle dataset rather than a nationally representative survey, the participants may not reflect the experiences of all demographic groups, geographic regions, or socioeconomic backgrounds. This means the findings may not generalize to the broader population.\nAnother limitation is that the analysis is descriptive rather than causal. The visualizations and summary statistics can identify patterns and associations between variables, but they cannot prove that one factor directly causes anxiety, depression, or stress.\nThe dataset may also contain measurement limitations. Mental health variables such as anxiety, depression, and stress are often based on self-reported responses, which can be influenced by personal interpretation, honesty, or differences in how participants understand survey questions. This means the scores may not perfectly capture an individual’s true mental health condition.\nIn addition, some potentially important variables that also influence anxiety depression, and stress level may be missing from the dataset."
-  },
-  {
-    "objectID": "DANL310_Dashboard.html#row-1",
-    "href": "DANL310_Dashboard.html#row-1",
-    "title": "DANL 310 Mental Health Analysis Dashboard",
-    "section": "Row 1",
-    "text": "Row 1"
-  },
-  {
-    "objectID": "DANL310_Dashboard.html#row-2",
-    "href": "DANL310_Dashboard.html#row-2",
-    "title": "DANL 310 Mental Health Analysis Dashboard",
-    "section": "Row 2",
-    "text": "Row 2"
   }
 ]
