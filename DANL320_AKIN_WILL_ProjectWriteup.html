@@ -6,10 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Will Akin">
 <meta name="dcterms.date" content="2026-05-14">
 
-<title>Ben &amp; Jerry’s Ice Cream – Will Akin</title>
+<title>DANL320 Project Writeup – Will Akin</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -346,24 +310,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Ben &amp; Jerry’s Ice Cream</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">r</div>
-    <div class="quarto-category">data-analysis</div>
-    <div class="quarto-category">ice-cream</div>
-  </div>
-  </div>
+<h1 class="title">DANL320 Project Writeup</h1>
+</div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Will Akin </p>
-          </div>
-  </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
@@ -380,144 +333,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ice_cream <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://bcdanl.github.io/data/ben-and-jerry-cleaned.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 21974 Columns: 17
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (4): flavor_descr, size1_descr, region, race
-dbl (5): priceper1, household_id, household_income, household_size, couponper1
-lgl (8): usecoup, married, hispanic_origin, microwave, dishwasher, sfh, inte...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ice_cream)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   priceper1        flavor_descr      size1_descr     household_id     
- Min.   :0.000   Length   :21974   Length   :21974   Min.   : 2000358  
- 1st Qu.:3.000   N.unique :   50   N.unique :    2   1st Qu.: 8142253  
- Median :3.340   N.blank  :    0   N.blank  :    0   Median : 8401573  
- Mean   :3.315   Min.nchar:    3   Min.nchar:    9   Mean   :16612005  
- 3rd Qu.:3.590   Max.nchar:   30   Max.nchar:    9   3rd Qu.:30183891  
- Max.   :9.480                                       Max.   :30440689  
- household_income household_size   usecoup          couponper1    
- Min.   : 40000   Min.   :1.000   Mode :logical   Min.   :0.0000  
- 1st Qu.: 80000   1st Qu.:2.000   FALSE:19629     1st Qu.:0.0000  
- Median :110000   Median :2.000   TRUE :2345      Median :0.0000  
- Mean   :125291   Mean   :2.456                   Mean   :0.1256  
- 3rd Qu.:170000   3rd Qu.:3.000                   3rd Qu.:0.0000  
- Max.   :310000   Max.   :9.000                   Max.   :8.9800  
-       region       married               race       hispanic_origin
- Length   :21974   Mode :logical   Length   :21974   Mode :logical  
- N.unique :    4   FALSE:8698      N.unique :    4   FALSE:20919    
- N.blank  :    0   TRUE :13276     N.blank  :    0   TRUE :1055     
- Min.nchar:    4                   Min.nchar:    5                  
- Max.nchar:    7                   Max.nchar:    5                  
-                                                                    
- microwave       dishwasher         sfh           internet      
- Mode :logical   Mode :logical   Mode :logical   Mode :logical  
- FALSE:407       FALSE:4991      FALSE:5898      FALSE:3445     
- TRUE :21567     TRUE :16983     TRUE :16076     TRUE :18529    
-                                                                
-                                                                
-                                                                
-  tvcable       
- Mode :logical  
- FALSE:7986     
- TRUE :13954    
- NAs  :34       
-                
-                </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ice_cream <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(flavor_descr, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 2
-  flavor_descr            n
-  &lt;chr&gt;               &lt;int&gt;
-1 CHERRY GRCA          2097
-2 CHC FUDGE BROWNIE    1235
-3 CHC CHIP C-DH        1070
-4 HEATH COFFEE CRUNCH  1070
-5 CHUNKY MONKEY        1064</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ice_cream <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(flavor_descr) <span class="sc">%&gt;%</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_price =</span> <span class="fu">mean</span>(priceper1, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_price)) <span class="sc">%&gt;%</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 10 × 2
-   flavor_descr          avg_price
-   &lt;chr&gt;                     &lt;dbl&gt;
- 1 WHITE RUSSIAN              4.19
- 2 STR                        3.69
- 3 SWEET CREAM &amp; COOKIES      3.65
- 4 COFFEE                     3.57
- 5 VAN                        3.51
- 6 MINT CHC CHUNK             3.51
- 7 DOUBLE CHC FUDGE SWR       3.49
- 8 CHC CHIP C-DH              3.47
- 9 CHERRY GRCA                3.44
-10 SMORES                     3.44</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  priceper1 <span class="sc">~</span> usecoup <span class="sc">+</span> household_size <span class="sc">+</span> region,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> ice_cream</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = priceper1 ~ usecoup + household_size + region, data = ice_cream)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--3.4474 -0.3348  0.0071  0.3072  6.0326 
-
-Coefficients:
-                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)     3.326852   0.012774 260.448  &lt; 2e-16 ***
-usecoupTRUE     0.059067   0.014493   4.076 4.60e-05 ***
-household_size -0.022041   0.003342  -6.595 4.36e-11 ***
-regionEast      0.142549   0.013631  10.457  &lt; 2e-16 ***
-regionSouth    -0.019784   0.012459  -1.588 0.112315    
-regionWest      0.045606   0.012852   3.549 0.000388 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.662 on 21968 degrees of freedom
-Multiple R-squared:  0.01112,   Adjusted R-squared:  0.01089 
-F-statistic: 49.39 on 5 and 21968 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
-</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This project analyzes factors associated with mental health outcomes, specifically anxiety, depression, and stress. Mental health is influenced by a combination of behavioral, lifestyle, and psychosocial factors, making it a complex and important area of study. Understanding these relationships can help identify individuals at higher risk and support more targeted interventions.</p>
+<p>The purpose of this project is to examine how variables such as sleep, financial stress, self-esteem, loneliness, social support, and physical activity relate to mental health outcomes. The main objective is to build predictive models for anxiety, depression, and stress while also identifying meaningful subgroups within the data. Both supervised and unsupervised machine learning methods are used to better understand patterns and improve interpretability.</p>
+</section>
+<section id="data" class="level1">
+<h1>Data</h1>
+<p>The dataset used in this project was obtained from Kaggle and contains individual-level survey data related to mental health indicators. Each row represents one individual, and the data includes demographic, behavioral, and psychosocial variables.</p>
+</section>
+<section id="variables" class="level1">
+<h1>Variables</h1>
+<p>The main variables used in this analysis include: Outcome variables: anxiety score, depression score, stress level Scoring variables: sleep hours, physical activity, substance use, loneliness score, self-esteem score, social support score, age, education level, work stress, financial stress</p>
+</section>
+<section id="cleaning-and-preparation" class="level1">
+<h1>Cleaning and Preparation</h1>
+<p>The data was cleaned by checking for missing values and ensuring consistent variable types. Relevant variables were selected for analysis, and categorical variables were refactored. Continuous variables were used directly in regression models, while decision tree models handled both numeric and categorical predictors.</p>
+</section>
+<section id="exploratory-data-analysis" class="level1">
+<h1>Exploratory Data Analysis</h1>
+<p>Exploratory analysis included summary statistics and visualizations of key variables. Distributions showed variation in mental health scores across individuals, with noticeable relationships between stress-related variables and outcome measures.</p>
+</section>
+<section id="supervised-machine-learning-analysis" class="level1">
+<h1>Supervised Machine Learning Analysis</h1>
+<p>Multiple supervised learning models were used to predict anxiety, depression, and stress, includiing linear regression models and decision trees.</p>
+</section>
+<section id="modeling-goal" class="level1">
+<h1>Modeling Goal</h1>
+<p>The goal was to predict mental health outcomes using behavioral, demographic, and psychosocial predictors and to identify the most influential variables.</p>
+</section>
+<section id="data-splitting-and-validation" class="level1">
+<h1>Data Splitting and Validation</h1>
+<p>The dataset was split into training and test sets to evaluate model performance. Model accuracy was assessed using Root Mean Squared Error (RMSE) for linear models. Decision trees were evaluated using cross-validated error and complexity parameter (CP) plots.</p>
+</section>
+<section id="results-and-comparison" class="level1">
+<h1>Results and Comparison</h1>
+<p>The linear regression models showed similar RMSE values across outcomes (approximately 5.7 to 6.1), indicating weak to moderate predictive performance. Key predictors included financial stress, self-esteem, loneliness, sleep, and social support, with consistent directional relationships across models.</p>
+<p>Decision tree models provided more interpretable subgroup structures. Anxiety was primarily driven by substance use, depression by sleep duration, and stress by loneliness. CP plots suggested optimal tree sizes of 8 splits for anxiety and depression, and 10 splits for stress. Overall, the models revealed consistent predictors but limited overall predictive accuracy.</p>
+</section>
+<section id="unsupervised-learning-analysis" class="level1">
+<h1>Unsupervised Learning Analysis</h1>
+<p>Clustering analysis was used to identify natural groupings of individuals based on mental health and stress-related variables.</p>
+</section>
+<section id="method-and-purpose" class="level1">
+<h1>Method and Purpose</h1>
+<p>Clustering was applied to group individuals with similar mental health profiles without using outcome labels. This method helps uncover hidden structure in the data.</p>
+</section>
+<section id="findings" class="level1">
+<h1>Findings</h1>
+<p>Three distinct clusters were identified:</p>
+<p>Cluster 1: individuals with elevated financial stress and otherwise moderate mental health indicators</p>
+<p>Cluster 2: individuals experiencing high work stress but relatively strong psychological wellbeing</p>
+<p>Cluster 3: individuals with low self-esteem and high loneliness, indicating higher psychosocial vulnerability</p>
+</section>
+<section id="insights" class="level1">
+<h1>Insights</h1>
+<p>The clustering results highlight that mental health experiences are not uniform and can be grouped into meaningful subpopulations. These groups suggest different types of intervention needs depending on the underlying stressors.</p>
+</section>
+<section id="discussion-implications" class="level1">
+<h1>Discussion / Implications</h1>
+<p>The results suggest that mental health outcomes are influenced by multiple overlapping factors, but no single model fully captures their complexity. Financial stress, loneliness, self-esteem, and sleep consistently emerged as important predictors across models, highlighting their practical significance.</p>
+<p>A key strength of this analysis is the use of multiple methods, including regression, decision trees, and clustering, which provide both predictive insight and interpretability. However, limitations include relatively weak predictive performance, suggesting missing variables or more complex relationships not captured by the models. Additionally, results are based on a single dataset, limiting generalizability.</p>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>This project examined mental health outcomes using supervised and unsupervised machine learning methods. The results showed that financial stress, self-esteem, loneliness, and sleep are consistently important factors across anxiety, depression, and stress models. However, predictive accuracy was moderate to weak, indicating the complexity of mental health data.</p>
+<p>Overall, the project demonstrated that while prediction is limited, meaningful patterns and subgroups can still be identified. Future work could improve performance by incorporating additional variables, using larger or longitudinal datasets, and applying more advanced models such as random forests or gradient boosting.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script type="text/javascript" src="links.js"></script>

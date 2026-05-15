@@ -1,0 +1,67 @@
+---
+title: "DANL320 Project Writeup"
+output: html_document
+date: "2026-05-14"
+---
+
+# Introduction
+This project analyzes factors associated with mental health outcomes, specifically anxiety, depression, and stress. Mental health is influenced by a combination of behavioral, lifestyle, and psychosocial factors, making it a complex and important area of study. Understanding these relationships can help identify individuals at higher risk and support more targeted interventions.
+
+The purpose of this project is to examine how variables such as sleep, financial stress, self-esteem, loneliness, social support, and physical activity relate to mental health outcomes. The main objective is to build predictive models for anxiety, depression, and stress while also identifying meaningful subgroups within the data. Both supervised and unsupervised machine learning methods are used to better understand patterns and improve interpretability.
+
+# Data
+The dataset used in this project was obtained from Kaggle and contains individual-level survey data related to mental health indicators. Each row represents one individual, and the data includes demographic, behavioral, and psychosocial variables.
+
+# Variables
+The main variables used in this analysis include:
+Outcome variables: anxiety score, depression score, stress level
+Scoring variables: sleep hours, physical activity, substance use, loneliness score, self-esteem score, social support score, age, education level, work stress, financial stress
+
+# Cleaning and Preparation
+The data was cleaned by checking for missing values and ensuring consistent variable types. Relevant variables were selected for analysis, and categorical variables were refactored. Continuous variables were used directly in regression models, while decision tree models handled both numeric and categorical predictors.
+
+# Exploratory Data Analysis
+Exploratory analysis included summary statistics and visualizations of key variables. Distributions showed variation in mental health scores across individuals, with noticeable relationships between stress-related variables and outcome measures. 
+
+# Supervised Machine Learning Analysis
+Multiple supervised learning models were used to predict anxiety, depression, and stress, includiing linear regression models and decision trees.
+
+# Modeling Goal
+The goal was to predict mental health outcomes using behavioral, demographic, and psychosocial predictors and to identify the most influential variables.
+
+# Data Splitting and Validation
+The dataset was split into training and test sets to evaluate model performance. Model accuracy was assessed using Root Mean Squared Error (RMSE) for linear models. Decision trees were evaluated using cross-validated error and complexity parameter (CP) plots.
+
+# Results and Comparison
+The linear regression models showed similar RMSE values across outcomes (approximately 5.7 to 6.1), indicating weak to moderate predictive performance. Key predictors included financial stress, self-esteem, loneliness, sleep, and social support, with consistent directional relationships across models.
+
+Decision tree models provided more interpretable subgroup structures. Anxiety was primarily driven by substance use, depression by sleep duration, and stress by loneliness. CP plots suggested optimal tree sizes of 8 splits for anxiety and depression, and 10 splits for stress.
+Overall, the models revealed consistent predictors but limited overall predictive accuracy.
+
+# Unsupervised Learning Analysis
+Clustering analysis was used to identify natural groupings of individuals based on mental health and stress-related variables.
+
+# Method and Purpose
+Clustering was applied to group individuals with similar mental health profiles without using outcome labels. This method helps uncover hidden structure in the data.
+
+# Findings
+Three distinct clusters were identified:
+
+Cluster 1: individuals with elevated financial stress and otherwise moderate mental health indicators
+
+Cluster 2: individuals experiencing high work stress but relatively strong psychological wellbeing
+
+Cluster 3: individuals with low self-esteem and high loneliness, indicating higher psychosocial vulnerability
+
+# Insights
+The clustering results highlight that mental health experiences are not uniform and can be grouped into meaningful subpopulations. These groups suggest different types of intervention needs depending on the underlying stressors.
+
+# Discussion / Implications
+The results suggest that mental health outcomes are influenced by multiple overlapping factors, but no single model fully captures their complexity. Financial stress, loneliness, self-esteem, and sleep consistently emerged as important predictors across models, highlighting their practical significance.
+
+A key strength of this analysis is the use of multiple methods, including regression, decision trees, and clustering, which provide both predictive insight and interpretability. However, limitations include relatively weak predictive performance, suggesting missing variables or more complex relationships not captured by the models. Additionally, results are based on a single dataset, limiting generalizability.
+
+# Conclusion
+This project examined mental health outcomes using supervised and unsupervised machine learning methods. The results showed that financial stress, self-esteem, loneliness, and sleep are consistently important factors across anxiety, depression, and stress models. However, predictive accuracy was moderate to weak, indicating the complexity of mental health data.
+
+Overall, the project demonstrated that while prediction is limited, meaningful patterns and subgroups can still be identified. Future work could improve performance by incorporating additional variables, using larger or longitudinal datasets, and applying more advanced models such as random forests or gradient boosting.

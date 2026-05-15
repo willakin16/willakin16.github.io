@@ -14,10 +14,10 @@ website:
         href: blog-listing.qmd
       - text: 310 Project
         href: danl-310-data-storytelling-project.qmd
+      - text: 320 Project
+        href: DANL320_AKIN_WILL_Project.qmd
       - text: Dashboard
         href: DANL310_Dashboard.qmd
-      - text: Mental Health Write-Up
-        href: DANL310_WriteUp.qmd
       - text: Python Data Analysis
         menu:
         - text: Pandas Basics
